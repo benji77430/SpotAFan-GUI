@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+import sys
+import os
+
+os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
+
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QIcon
+
+from spotafan.config import Config
+from spotafan.main_window import MainWindow
+
+
+def main():
+    Config.ensure_dirs()
+    Config.load_settings()
+
+    app = QApplication(sys.argv)
+    app.setApplicationName(Config.APP_NAME)
+    app.setApplicationVersion(Config.VERSION)
+
+    window = MainWindow()
+    window.show()
+
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
