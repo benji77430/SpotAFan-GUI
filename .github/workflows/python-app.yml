@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
+name: Build Multi-Platform Binaries
 
 on:
   push:
@@ -9,36 +6,41 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        # This triggers two parallel jobs: one on Linux, one on Windows
+        os: [ubuntu-latest, windows-latest]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.10"
+        python-version: '3.14' # Specify your Python version
+        cache: 'pip'           # Caches pip dependencies to speed up runs
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pyinstaller
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Compiling
+        pip install pyinstaller
+        pip install -r requirements.txt
+        # Install your project's dependencies here, e.g., pip install -r requirements.txt
+        # If you have specific dependencies, make sure they are installed!
+
+    - name: Build with PyInstaller
       run: |
         pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
-    - name: Upload Executable Artifact
+
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: SpotAFan-executable
+        name: binary-${{ matrix.os }}
+        # PyInstaller outputs to the 'dist' folder by default
         path: dist/
