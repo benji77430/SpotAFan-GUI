@@ -59,6 +59,8 @@ class PlayerEngine(QObject):
 
     def play_song(self, song):
         self._current_song = song
+        print(f"saving current song : {song["id"]}")
+        Config.set("current_song", self._current_song)
         self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
         self._player.play()
         self.song_changed.emit(song)
@@ -74,8 +76,6 @@ class PlayerEngine(QObject):
                 self._load_current()
             elif self._current_song:
                 self.play_song(self._current_song)
-                Config.set("current_song", self._current_song)
-                print("saving musics to settings !")
 
         else:
             self._player.play()

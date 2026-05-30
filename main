@@ -25,6 +25,7 @@ def main():
     window = MainWindow()
     window.show()
     window.setWindowIcon(QIcon("logo.ico"))
+    
     sys.exit(app.exec())
 
 

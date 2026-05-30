@@ -1,4 +1,6 @@
 import os
+from spotafan.config import Config
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
@@ -19,6 +21,7 @@ class LibraryView(QFrame):
 
     def __init__(self, library_manager, database, parent=None):
         super().__init__(parent)
+        Config.load_settings()
         self._library = library_manager
         self._db = database
         self._songs = []
@@ -26,6 +29,9 @@ class LibraryView(QFrame):
         self._setup_ui()
         self._connect_signals()
         self.refresh()
+        self.play_song_requested.emit(Config.get("current_song","1"))
+
+
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
