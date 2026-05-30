@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QFrame, QAbstractItemView,
 )
 from PySide6.QtGui import QColor, QPalette
+from spotafan.Lang import LANG
 
 
 class DownloadView(QFrame):
@@ -17,24 +18,25 @@ class DownloadView(QFrame):
         self._setup_ui()
         self._connect_signals()
         self._refresh()
+        LANG.load_settings()
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
-        title = QLabel("Downloads")
+        title = QLabel("Download")
         title.setObjectName("header")
         layout.addWidget(title)
 
         # Queue info
         info_row = QHBoxLayout()
-        self._queue_count = QLabel("0 active downloads")
+        self._queue_count = QLabel(f"0 {LANG.get("active_downloads")}")
         self._queue_count.setObjectName("subtitle")
         info_row.addWidget(self._queue_count)
         info_row.addStretch()
 
-        self._clear_btn = QPushButton("Clear Completed")
+        self._clear_btn = QPushButton(LANG.get("clear_complete"))
         self._clear_btn.setStyleSheet(
             "background-color: transparent; border: 1px solid #535353; "
             "border-radius: 16px; padding: 6px 16px; color: #ffffff; "

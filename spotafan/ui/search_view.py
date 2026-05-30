@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 )
 
 from spotafan.config import Config
+from spotafan.Lang import LANG
 
 
 class SearchView(QFrame):
@@ -18,23 +19,24 @@ class SearchView(QFrame):
         self.setObjectName("card")
         self._setup_ui()
         self._connect_signals()
+        LANG.load_settings()
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
-        title = QLabel("Search & Download")
+        title = QLabel(LANG.get("search&download"))
         title.setObjectName("header")
         layout.addWidget(title)
 
         # Search row
         search_row = QHBoxLayout()
         self._search_input = QLineEdit()
-        self._search_input.setPlaceholderText("Search for songs on YouTube...")
+        self._search_input.setPlaceholderText(LANG.get("searchonyt"))
         search_row.addWidget(self._search_input, stretch=1)
 
-        self._search_btn = QPushButton("🔍 Search")
+        self._search_btn = QPushButton(f"🔍 {LANG.get("search")}")
         self._search_btn.setFixedWidth(120)
         search_row.addWidget(self._search_btn)
         layout.addLayout(search_row)
@@ -51,7 +53,7 @@ class SearchView(QFrame):
         self._results_layout.setContentsMargins(0, 0, 0, 0)
 
         self._empty_label = QLabel(
-            "Search for music to download.\nUse the search bar above to find songs."
+            LANG.get("nosearchtext")
         )
         self._empty_label.setObjectName("subtitle")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -79,7 +81,7 @@ class SearchView(QFrame):
         query = self._search_input.text().strip()
         if not query:
             return
-        self._status_label.setText("Searching...")
+        self._status_label.setText(LANG.get("searching"))
         self._clear_results()
         self._downloader.search(query)
 
@@ -136,19 +138,19 @@ class SearchView(QFrame):
         # Info
         info = QVBoxLayout()
         info.setSpacing(2)
-        title = QLabel(result.get("title", "Unknown"))
+        title = QLabel(result.get("title", LANG.get("unknown_track")))
         title.setStyleSheet("font-weight: bold; font-size: 13px; color: #ffffff;")
         title.setWordWrap(True)
         info.addWidget(title)
 
-        sub = QLabel(f"{result.get('artist', 'Unknown')}  ·  "
+        sub = QLabel(f"{result.get('artist', LANG.get("unknown_artist"))}  ·  "
                      f"{self._format_time(result.get('duration', 0))}")
         sub.setStyleSheet("font-size: 11px; color: #b3b3b3;")
         info.addWidget(sub)
         row.addLayout(info, stretch=1)
 
         # Download button
-        download_btn = QPushButton("Download")
+        download_btn = QPushButton(LANG.get("download"))
         download_btn.setFixedSize(105, 32)
         download_btn.setStyleSheet("""
             QPushButton {
@@ -168,7 +170,7 @@ class SearchView(QFrame):
     def _download_song(self, result):
         self._downloader.start_download(result)
         self._status_label.setText(
-            f'Downloading: {result.get("title", "")}...'
+            f'{LANG.get("downloading")} {result.get("title", "")}...'
         )
 
     @staticmethod
