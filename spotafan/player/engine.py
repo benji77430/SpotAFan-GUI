@@ -1,4 +1,4 @@
-import random
+import random,time
 from PySide6.QtCore import QObject, Signal, QUrl, QTimer
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from spotafan.config import Config
@@ -18,12 +18,12 @@ class PlayerEngine(QObject):
         self._player.setAudioOutput(self._audio)
         Config.load_settings()
         LANG.load_settings()
-
+        self._audio.setVolume(max(0, min(100, Config.get("volume"))) / 100.0)
         self._playlist = []
         self._current_index = -1
         self._shuffle = False
         self._repeat = False
-        self._current_song = Config.get("current_song")
+        self._current_song = None
 
         self._player.positionChanged.connect(
             lambda pos: self.position_changed.emit(pos / 1000.0)
@@ -33,6 +33,7 @@ class PlayerEngine(QObject):
         )
         self._player.mediaStatusChanged.connect(self._on_media_status)
         self._player.playbackStateChanged.connect(self._on_state_changed)
+        self.set_playlist(Config.get("current_playlist"),Config.get("current_song"),restart=True)
 
     def _on_media_status(self, status):
         if status == QMediaPlayer.MediaStatus.EndOfMedia:
@@ -55,23 +56,30 @@ class PlayerEngine(QObject):
         self._audio.setVolume(max(0, min(100, value)) / 100.0)
         self.volume_changed.emit(self.volume)
 
-    def set_playlist(self, songs, start_index=0):
+    def set_playlist(self, songs, start_index=0,restart=False):
         self._playlist = list(songs)
         self._current_index = start_index if self._playlist else -1
-        self._load_current()
+        Config.set("current_song", self._current_index)
+        Config.set("current_playlist", self._playlist)
+        self._load_current(restart)
 
-    def play_song(self, song):
+    def play_song(self, song,restart=False):
         if not song==None:
+            
             self._current_song = song
-            Config.set("current_song", self._current_song)
             self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
             self._player.play()
+            if restart:
+                print("restart mode !")
+                self._player.setPosition(int(Config.get("current_time")))
             self.song_changed.emit(song)
 
-    def _load_current(self):
+    
+
+    def _load_current(self,restart=False):
         if 0 <= self._current_index < len(self._playlist):
-            song = self._playlist[self._current_index]
-            self.play_song(song)
+            song = self._playlist[self._current_index+1 if restart else self._current_index]
+            self.play_song(song,restart)
 
     def play(self):
         if self._player.playbackState() == QMediaPlayer.PlaybackState.StoppedState:
@@ -157,4 +165,6 @@ class PlayerEngine(QObject):
         return self._player.playbackState() == QMediaPlayer.PlaybackState.PlayingState
 
     def cleanup(self):
+        print(f"current time : {int(self._player.position()) / 1000.0}")
+        Config.set("current_time",int(self._player.position()))
         self._player.stop()

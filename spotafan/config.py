@@ -33,6 +33,8 @@ class Config:
         "volume": 80,
         "lang": "en",
         "current_song": "",
+        "current_playlist": "",
+        "current_time": 0
     }
 
     

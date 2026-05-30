@@ -190,7 +190,7 @@ class LibraryView(QFrame):
         from PySide6.QtWidgets import QFileDialog
         files, _ = QFileDialog.getOpenFileNames(
             self, LANG.get("import"), "",
-            "Audio Files (*.mp3 *.flac *.ogg *.wav *.m4a *.wma);;All Files (*)",
+            "Audio Files (*.mp3 *.flac *.ogg *.wav *.m4a *.wma *.webm);;All Files (*)",
         )
         for fp in files:
             self._library.import_local_file(fp)

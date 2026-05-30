@@ -150,7 +150,7 @@ class SearchView(QFrame):
             try:
                 from PySide6.QtGui import QPixmap
                 pixmap = QPixmap()
-                response = requests.get(thumb_url, timeout=3)
+                response = requests.get(thumb_url, timeout=0.4)
                 if response.status_code == 200 and pixmap.loadFromData(response.content):
                     thumb_label.setPixmap(
                         pixmap.scaled(

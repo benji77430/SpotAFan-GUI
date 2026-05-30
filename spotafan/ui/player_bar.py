@@ -14,6 +14,7 @@ from spotafan.Lang import LANG
 class PlayerBar(QFrame):
     def __init__(self, engine, parent=None):
         super().__init__(parent)
+        LANG.load_settings()
         self._engine = engine
         self._is_dragging = False
         self._duration = 0
@@ -35,8 +36,6 @@ class PlayerBar(QFrame):
         self.thread_artist.start()
         self.old_volume = 50
 
-        self.old_volume=50
-        LANG.load_settings()
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
@@ -61,10 +60,10 @@ class PlayerBar(QFrame):
 
         info_vbox = QVBoxLayout()
         info_vbox.setSpacing(4)
-        self._song_title = QLabel()
+        self._song_title = QLabel(LANG.get("notrack"))
         self._song_title.setObjectName("title")
         self._song_title.setStyleSheet("font-size: 14px;")
-        self._song_artist = QLabel(LANG.get("notrack"))
+        self._song_artist = QLabel()
         self._song_artist.setObjectName("subtitle")
         info_vbox.addWidget(self._song_title)
         info_vbox.addWidget(self._song_artist)
@@ -229,25 +228,25 @@ class PlayerBar(QFrame):
             self._engine.volume = self.old_volume
 
     def _on_song_changed(self, song):
+        print(f"song received : {song}")
         self.title = song.get("title", LANG.get("unknown_track"))
         self.artist = song.get("artist", LANG.get("unknown_artist"))
         
         self._song_title.setStyleSheet(
             "font-size: 14px; font-weight: bold; color: #ffffff;"
         )
-
         # Récupération de la miniature existante
         thumb = song.get("thumbnail", "")
         
         # Recherche alternative automatique sur Internet si absente
-        if not thumb and self.title != "Unknown" and self.title != "No track playing":
+        if not thumb and self.title != LANG.get("unknown_track") and self.title != LANG.get("notrack"):
             thumb = self.fetch_track_cover(self.title, self.artist)
 
         if thumb:
             try:
                 pixmap = QPixmap()
                 if pixmap.loadFromData(
-                    requests.get(thumb, timeout=5).content
+                    requests.get(thumb, timeout=2).content
                 ):
                     self._cover_label.setPixmap(
                         pixmap.scaled(
