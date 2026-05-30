@@ -73,15 +73,14 @@ class LibraryView(QFrame):
         # Table
         self._table = QTableWidget()
         self._table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self._table.setColumnCount(5)
-        self._table.setHorizontalHeaderLabels(["", "Title", "Artist", "Duration", ""])
+        self._table.setColumnCount(4)
+        self._table.setHorizontalHeaderLabels(["", "Title", "Artist", "Duration"])
         self._table.setColumnWidth(0, 40)
         self._table.horizontalHeader().setStretchLastSection(False)
         self._table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self._table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
         self._table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)
         self._table.setColumnWidth(3, 80)
-        self._table.setColumnWidth(4, 40)
         self._table.verticalHeader().setVisible(False)
         self._table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self._table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
@@ -100,6 +99,7 @@ class LibraryView(QFrame):
         self._import_btn.clicked.connect(self._import_file)
         self._table.itemDoubleClicked.connect(self._on_item_double_clicked)
         self._table.customContextMenuRequested.connect(self._show_context_menu)
+        self._table.itemClicked.connect(self._show_context_menu)
 
     def refresh(self):
         self._songs = self._library.get_all_songs()
@@ -133,16 +133,13 @@ class LibraryView(QFrame):
                                        Qt.AlignmentFlag.AlignVCenter)
             self._table.setItem(row, 3, dur_item)
 
-            more = QTableWidgetItem("⋯")
-            more.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self._table.setItem(row, 4, more)
-
             self._table.setRowHeight(row, 48)
 
         self._count_label.setText(f"{len(songs)} song{'s' if len(songs) != 1 else ''}")
 
     def _on_item_double_clicked(self, item):
         row = item.row()
+        print(f"row : {row}")
         if 0 <= row < len(self._songs):
             self.play_song_requested.emit(self._songs[row])
 

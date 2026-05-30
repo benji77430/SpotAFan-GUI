@@ -10,9 +10,7 @@ from PySide6.QtGui import QIcon
 from spotafan.config import Config
 from spotafan.main_window import MainWindow
 
-
 def main():
-
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
     Config.ensure_dirs()

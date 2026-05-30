@@ -1,3 +1,4 @@
+import threading,time
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
@@ -22,7 +23,11 @@ class PlayerBar(QFrame):
         """)
         self._setup_ui()
         self._connect_signals()
-
+        self.title=None
+        self.thread_title=threading.Thread(target=self._title_rotate)
+        self.thread_title.start()
+        self.thread_artist=threading.Thread(target=self._artist_rotate)
+        self.thread_artist.start()
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
@@ -204,10 +209,9 @@ class PlayerBar(QFrame):
         self._volume_slider.valueChanged.connect(self._on_volume_changed)
 
     def _on_song_changed(self, song):
-        title = song.get("title", "Unknown")
-        artist = song.get("artist", "Unknown Artist")
-        self._song_title.setText(title)
-        self._song_artist.setText(artist)
+        self.title = song.get("title", "Unknown")
+        self.artist = song.get("artist", "Unknown Artist")
+        
         self._song_title.setStyleSheet(
             "font-size: 14px; font-weight: bold; color: #ffffff;"
         )
@@ -269,7 +273,52 @@ class PlayerBar(QFrame):
         self._engine.volume = value
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
+<<<<<<< HEAD
     
+=======
+
+    def _title_rotate(self):
+        CLOSE=False
+        while not CLOSE:
+            while self.title != None:
+                self._song_artist.setText(self.artist)
+                if not len(self.title) < 20:
+                    for i in range(len(self.title)):
+                        self._song_title.setText(self.title[i::])
+                        time.sleep(0.15)
+                    self._song_title.setText(self.title)
+                    
+                    if not len(self.artist) < 30:
+                        for i in range(len(self.artist)):
+                            self._song_artist.setText(self.artist[i::])
+                            time.sleep(0.15)
+                            self._song_artist.setText(self.artist)
+                        
+                    else:
+                        self._song_artist.setText(self.artist)
+                        time.sleep(0.2)
+                else:
+                    self._song_title.setText(self.title)
+                    time.sleep(0.2)
+                
+                
+            time.sleep(0.05)
+    def _artist_rotate(self):
+        CLOSE=False
+        while not CLOSE:
+            while self.title != None:
+                if not len(self.artist) < 30:
+                    for i in range(len(self.artist)):
+                        self._song_artist.setText(self.artist[i::])
+                        time.sleep(0.15)
+                        self._song_artist.setText(self.artist)
+                else:
+                    self._song_artist.setText(self.artist)
+                    time.sleep(0.2)
+
+                
+            time.sleep(0.05)
+>>>>>>> f0867f7f5a784f3e5698c406eb8e80333ddeea22
     @staticmethod
     def _format_time(seconds):
         if seconds < 0:
