@@ -47,7 +47,7 @@ class LibraryView(QFrame):
         header.addWidget(title)
         header.addStretch()
 
-        self._count_label = QLabel(f"0 {LANG.get("songs")}")
+        self._count_label = QLabel(f"0 {LANG.get('songs')}")
         self._count_label.setObjectName("subtitle")
         header.addWidget(self._count_label)
         layout.addLayout(header)
@@ -137,7 +137,7 @@ class LibraryView(QFrame):
 
             self._table.setRowHeight(row, 48)
 
-        self._count_label.setText(f"{len(songs)}  {LANG.get("songs")}")
+        self._count_label.setText(f"{len(songs)}  {LANG.get('songs')}")
 
     def _on_item_double_clicked(self, item):
         row = item.row()
@@ -161,10 +161,10 @@ class LibraryView(QFrame):
             QMenu::item:selected { background-color: #1db954; }
         """)
 
-        play_act = menu.addAction(f"▶ {LANG.get("play")}")
-        play_next = menu.addAction(f"⏭ {LANG.get("play_next")}")
+        play_act = menu.addAction(f"▶ {LANG.get('play')}")
+        play_next = menu.addAction(f"⏭ {LANG.get('play_next')}")
         menu.addSeparator()
-        delete_act = menu.addAction(f"🗑 {LANG.get("delete_from_lib")}")
+        delete_act = menu.addAction(f"🗑 {LANG.get('delete_from_lib')}")
 
         action = menu.exec(self._table.mapToGlobal(pos))
 
@@ -178,8 +178,8 @@ class LibraryView(QFrame):
     def _delete_song(self, song):
         reply = QMessageBox.question(
             self, LANG.get("delete_song"),
-            f'{LANG.get("delete")} "{song.get("title")}" {LANG.get("from_lib")}'
-            f"\n{LANG.get("will_also_be_removed_from_disk")}",
+            f'{LANG.get('delete')} "{song.get('title')}" {LANG.get('from_lib')}'
+            f"\n{LANG.get('will_also_be_removed_from_disk')}",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )

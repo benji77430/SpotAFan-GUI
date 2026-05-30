@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
 
         # Bottom sidebar: settings
         
-        self.settings_btn = QPushButton(f"⚙  {LANG.get("settings")}")
+        self.settings_btn = QPushButton(f"⚙  {LANG.get('settings')}")
         self.settings_btn.setObjectName("iconic")
         self.settings_btn.setFixedHeight(48)
         self.settings_btn.setCursor(Qt.CursorShape.PointingHandCursor)

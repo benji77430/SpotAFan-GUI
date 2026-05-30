@@ -31,7 +31,7 @@ class DownloadView(QFrame):
 
         # Queue info
         info_row = QHBoxLayout()
-        self._queue_count = QLabel(f"0 {LANG.get("active_downloads")}")
+        self._queue_count = QLabel(f"0 {LANG.get('active_downloads')}")
         self._queue_count.setObjectName("subtitle")
         info_row.addWidget(self._queue_count)
         info_row.addStretch()
