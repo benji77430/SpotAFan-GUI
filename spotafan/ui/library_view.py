@@ -178,7 +178,7 @@ class LibraryView(QFrame):
     def _delete_song(self, song):
         reply = QMessageBox.question(
             self, LANG.get("delete_song"),
-            f'{LANG.get('delete')} "{song.get('title')}" {LANG.get('from_lib')}'
+            f"""{LANG.get('delete')} "{song.get('title')}" {LANG.get('from_lib')}"""
             f"\n{LANG.get('will_also_be_removed_from_disk')}",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
