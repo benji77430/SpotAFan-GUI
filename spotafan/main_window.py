@@ -76,9 +76,9 @@ class MainWindow(QMainWindow):
         
         self._nav_btns = {}
         nav_items = [
-            ("library", f"🎵  {LANG.get("your_playlist")}"),
-            ("search", f"🔍  {LANG.get("explore")}"),
-            ("downloads", f"⬇  {LANG.get("download")}"),
+            ("library", f"🎵  {LANG.get('your_playlist')}"),
+            ("search", f"🔍  {LANG.get('explore')}"),
+            ("downloads", f"⬇  {LANG.get('download')}"),
         ]
         for key, label in nav_items:
             btn = QPushButton(label)
