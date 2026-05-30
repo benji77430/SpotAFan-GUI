@@ -34,7 +34,7 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+    - name: Compiling
       run: |
         pyinstaller --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
     - name: Upload Executable Artifact
