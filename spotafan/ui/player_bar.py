@@ -1,4 +1,6 @@
-import threading,time
+import threading
+import time
+import requests
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
@@ -24,12 +26,14 @@ class PlayerBar(QFrame):
         """)
         self._setup_ui()
         self._connect_signals()
-        self.title=None
-        self.thread_title=threading.Thread(target=self._title_rotate)
+        self.title = None
+        self.artist = None
+        self.thread_title = threading.Thread(target=self._title_rotate)
         self.thread_title.start()
-        self.thread_artist=threading.Thread(target=self._artist_rotate)
+        self.thread_artist = threading.Thread(target=self._artist_rotate)
         self.thread_artist.start()
-        self.old_volume=50
+        self.old_volume = 50
+
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
@@ -37,7 +41,7 @@ class PlayerBar(QFrame):
         # Left: song info
         self._song_info = QWidget()
         song_layout = QHBoxLayout(self._song_info)
-        self._song_info.setFixedSize(230,72)
+        self._song_info.setFixedSize(230, 72)
         self._song_info.setStyleSheet(
             "border-radius: 4px;"
         )
@@ -84,7 +88,6 @@ class PlayerBar(QFrame):
 
         self._shuffle_btn = self._make_ctrl_btn("🔀", "Shuffle")
         self._shuffle_btn.setStyleSheet("font-size: 16px;")
-
         controls.addWidget(self._shuffle_btn)
 
         self._prev_btn = self._make_ctrl_btn("⏮", "Previous")
@@ -161,7 +164,7 @@ class PlayerBar(QFrame):
         # 2. Layout interne du rectangle pour mettre les éléments côte à côte
         container_layout = QHBoxLayout(volume_container)
         container_layout.setSpacing(8)
-        container_layout.setContentsMargins(8, 4, 8, 4) # Ajoute un padding interne automatique
+        container_layout.setContentsMargins(8, 4, 8, 4)
 
         # 3. Tes variables d'origine (strictement inchangées) ajoutées dans le rectangle
         self._vol_btn = self._make_ctrl_btn("🔊", "Volume")
@@ -187,7 +190,7 @@ class PlayerBar(QFrame):
         style = "font-size: 18px;" if big else "font-size: 16px;"
         if bold:
             style += " font-weight: bold;"
-        style += " background: transparent; border: none; color: #000000;"
+        style += " background: transparent; border: none; color: #b3b3b3;"
         style += " QPushButton:hover { color: #ffffff; }"
         btn.setStyleSheet(style)
         return btn
@@ -213,14 +216,14 @@ class PlayerBar(QFrame):
 
     def _mute_volume(self):
         if self._engine.volume > 0:
-            self.old_volume=self._engine.volume
+            self.old_volume = self._engine.volume
             self._volume_slider.setValue(0)
             PlayerEngine.volume(0)
-            self._engine.volume=0
+            self._engine.volume = 0
         elif self._engine.volume == 0:
             self._volume_slider.setValue(self.old_volume)
             PlayerEngine.volume(self.old_volume)
-            self._engine.volume=self.old_volume
+            self._engine.volume = self.old_volume
 
     def _on_song_changed(self, song):
         self.title = song.get("title", "Unknown")
@@ -230,20 +233,30 @@ class PlayerBar(QFrame):
             "font-size: 14px; font-weight: bold; color: #ffffff;"
         )
 
+        # Récupération de la miniature existante
         thumb = song.get("thumbnail", "")
+        
+        # Recherche alternative automatique sur Internet si absente
+        if not thumb and self.title != "Unknown" and self.title != "No track playing":
+            thumb = self.fetch_track_cover(self.title, self.artist)
+
         if thumb:
-            pixmap = QPixmap()
-            if pixmap.loadFromData(
-                __import__("requests").get(thumb).content
-            ):
-                self._cover_label.setPixmap(
-                    pixmap.scaled(
-                        56, 56,
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation,
+            try:
+                pixmap = QPixmap()
+                if pixmap.loadFromData(
+                    requests.get(thumb, timeout=5).content
+                ):
+                    self._cover_label.setPixmap(
+                        pixmap.scaled(
+                            56, 56,
+                            Qt.AspectRatioMode.KeepAspectRatio,
+                            Qt.TransformationMode.SmoothTransformation,
+                        )
                     )
-                )
-                return
+                    return
+            except Exception:
+                pass
+                
         self._cover_label.clear()
         self._cover_label.setText("🎵")
         self._cover_label.setStyleSheet(
@@ -289,9 +302,9 @@ class PlayerBar(QFrame):
         self._vol_btn.setText(icon)
 
     def _title_rotate(self):
-        CLOSE=False
+        CLOSE = False
         while not CLOSE:
-            while self.title != None:
+            while self.title is not None:
                 self._song_artist.setText(self.artist)
                 if not len(self.title) < 20:
                     for i in range(len(self.title)):
@@ -312,12 +325,12 @@ class PlayerBar(QFrame):
                     self._song_title.setText(self.title)
                     time.sleep(0.2)
                 
-                
             time.sleep(0.05)
+
     def _artist_rotate(self):
-        CLOSE=False
+        CLOSE = False
         while not CLOSE:
-            while self.title != None:
+            while self.title is not None:
                 if not len(self.artist) < 30:
                     for i in range(len(self.artist)):
                         self._song_artist.setText(self.artist[i::])
@@ -326,9 +339,9 @@ class PlayerBar(QFrame):
                 else:
                     self._song_artist.setText(self.artist)
                     time.sleep(0.2)
-
                 
             time.sleep(0.05)
+
     @staticmethod
     def _format_time(seconds):
         if seconds < 0:
@@ -336,3 +349,19 @@ class PlayerBar(QFrame):
         m = int(seconds // 60)
         s = int(seconds % 60)
         return f"{m}:{s:02d}"
+
+    @staticmethod
+    def fetch_track_cover(title, artist=""):
+        """Recherche automatique via l'API publique et gratuite d'iTunes."""
+        query = f"{title} {artist}".strip()
+        url = f"https://itunes.apple.com/search?term={requests.utils.quote(query)}&entity=song&limit=1"
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("resultCount", 0) > 0:
+                    cover_url = data["results"][0]["artworkUrl100"]
+                    return cover_url.replace("100x100bb", "600x600bb")
+        except Exception as e:
+            print(f"Erreur de jaquette: {e}")
+        return ""
