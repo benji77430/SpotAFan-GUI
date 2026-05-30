@@ -33,13 +33,10 @@ class PlayerBar(QFrame):
         self.thread_title.start()
         self.thread_artist = threading.Thread(target=self._artist_rotate)
         self.thread_artist.start()
-<<<<<<< HEAD
         self.old_volume = 50
 
-=======
         self.old_volume=50
         LANG.load_settings()
->>>>>>> 7fb9e0e4af4e8b1c0717bae8236c59789ebe544f
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
