@@ -3,9 +3,15 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
     QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit,
-    QMenu, QFrame, QAbstractItemView, QMessageBox,
+    QMenu, QFrame, QAbstractItemView, QMessageBox,QStyledItemDelegate,QStyle,
 )
 
+class NoFocusDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        # Safely remove ONLY the focus state using a bitwise AND + NOT mask
+        if option.state & QStyle.StateFlag.State_HasFocus:
+            option.state &= ~QStyle.StateFlag.State_HasFocus
+        super().paint(painter, option, index)
 
 class LibraryView(QFrame):
     play_song_requested = Signal(dict)
@@ -60,6 +66,7 @@ class LibraryView(QFrame):
 
         # Table
         self._table = QTableWidget()
+        self._table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._table.setColumnCount(5)
         self._table.setHorizontalHeaderLabels(["", "Title", "Artist", "Duration", ""])
         self._table.setColumnWidth(0, 40)

@@ -76,9 +76,12 @@ class PlayerBar(QFrame):
         controls.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self._shuffle_btn = self._make_ctrl_btn("🔀", "Shuffle")
+        self._shuffle_btn.setStyleSheet("font-size: 16px;")
+
         controls.addWidget(self._shuffle_btn)
 
         self._prev_btn = self._make_ctrl_btn("⏮", "Previous")
+        self._prev_btn.setStyleSheet("font-size: 16px;")
         controls.addWidget(self._prev_btn)
 
         self._play_btn = self._make_ctrl_btn("▶", "Play", bold=True, big=True)
@@ -94,9 +97,11 @@ class PlayerBar(QFrame):
         controls.addWidget(self._play_btn)
 
         self._next_btn = self._make_ctrl_btn("⏭", "Next")
+        self._next_btn.setStyleSheet("font-size: 16px;")
         controls.addWidget(self._next_btn)
 
         self._repeat_btn = self._make_ctrl_btn("🔁", "Repeat")
+        self._repeat_btn.setStyleSheet("font-size: 14px;")
         controls.addWidget(self._repeat_btn)
 
         center_layout.addLayout(controls)

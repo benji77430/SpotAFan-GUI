@@ -3,6 +3,7 @@ QMainWindow, QWidget {
     background-color: #121212;
     color: #ffffff;
     font-family: 'Segoe UI', 'SF Pro Display', 'Ubuntu', sans-serif;
+    outline: none;
 }
 
 QPushButton {
@@ -52,10 +53,17 @@ QListWidget, QTableWidget, QTreeWidget {
     border: none;
     outline: none;
     font-size: 14px;
+    paint-alternating-row-colors-for-empty-area: true;
+}
+QListWidget:focus, QTableWidget:focus, QTreeWidget:focus {
+    outline: none;
+    border: none;
 }
 QListWidget::item, QTableWidget::item, QTreeWidget::item {
     padding: 8px 12px;
+    border: transparent 2px solid;
     border-radius: 4px;
+    outline: none;
 }
 QListWidget::item:selected, QTableWidget::item:selected, QTreeWidget::item:selected {
     background-color: #282828;

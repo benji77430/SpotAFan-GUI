@@ -28,6 +28,8 @@ class Config:
         "audio_quality": "192",
         "theme": "dark",
         "volume": 80,
+        "lang": "en",
+        "current_song": "",
     }
 
     _settings = dict(DEFAULT_SETTINGS)
