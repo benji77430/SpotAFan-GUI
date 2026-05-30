@@ -250,6 +250,11 @@ class PlayerBar(QFrame):
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
 
+    def _title_rotate(self):
+        self._song_title
+        
+        raise NotImplementedError
+
     @staticmethod
     def _format_time(seconds):
         if seconds < 0:
