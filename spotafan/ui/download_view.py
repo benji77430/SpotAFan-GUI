@@ -84,7 +84,7 @@ class DownloadView(QFrame):
     def _refresh(self):
         downloads = self._downloader.get_downloads()
         active = [d for d in downloads if d["status"] in (LANG.get("pending"), LANG.get("starting"), LANG.get("downloading"), LANG.get("processing"))]
-        self._queue_count.setText(f"{len(active)} {LANG.get("active_downloads")}")
+        self._queue_count.setText(f"{len(active)} {LANG.get('active_downloads')}")
         self._populate_table(downloads)
 
     def _populate_table(self, downloads):
