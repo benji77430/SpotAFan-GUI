@@ -1,4 +1,5 @@
 from PySide6.QtCore import Qt,Signal
+import json,os
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QStackedWidget, QFrame, QLabel,
@@ -6,6 +7,7 @@ from PySide6.QtWidgets import (
 )
 
 from spotafan.config import Config
+from spotafan.Lang import LANG
 from spotafan.database import Database
 from spotafan.player.engine import PlayerEngine
 from spotafan.player.playlist import PlaylistManager
@@ -16,12 +18,14 @@ from spotafan.ui.library_view import LibraryView
 from spotafan.ui.search_view import SearchView
 from spotafan.ui.download_view import DownloadView
 from spotafan.ui.style import DARK_STYLE
+from spotafan.ui.style import LIGHT_STYLE
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         Config.load_settings()
+        LANG.load_settings()
 
         self._db = Database()
         self._engine = PlayerEngine(self)
@@ -34,11 +38,12 @@ class MainWindow(QMainWindow):
         self._connect_signals()
         self._restore_volume()
 
+
     def _setup_window(self):
         self.setWindowTitle(f"{Config.APP_NAME} v{Config.VERSION}")
         self.setMinimumSize(1000, 650)
         self.resize(1200, 750)
-        self.setStyleSheet(DARK_STYLE)
+        self.setStyleSheet(DARK_STYLE if Config.get("theme") == "dark" else LIGHT_STYLE)
 
     def _setup_ui(self):
         central = QWidget()
@@ -68,22 +73,13 @@ class MainWindow(QMainWindow):
             padding: 20px 16px;
         """)
         sidebar_layout.addWidget(brand)
-
-        # Nav buttons
-        lang=Config.get("lang", "en")
+        
         self._nav_btns = {}
-        if lang=="en":
-            nav_items = [
-                ("library", "🎵  Your Playlist"),
-                ("search", "🔍  Explore"),
-                ("downloads", "⬇  Downloads"),
-            ]
-        elif lang=="fr":
-            nav_items = [
-                ("library", "🎵  Ma Playlist"),
-                ("search", "🔍  Explorer"),
-                ("downloads", "⬇  Téléchargements"),
-            ]
+        nav_items = [
+            ("library", f"🎵  {LANG.get("your_playlist")}"),
+            ("search", f"🔍  {LANG.get("explore")}"),
+            ("downloads", f"⬇  {LANG.get("download")}"),
+        ]
         for key, label in nav_items:
             btn = QPushButton(label)
             btn.setObjectName("iconic")
@@ -109,10 +105,8 @@ class MainWindow(QMainWindow):
         sidebar_layout.addStretch()
 
         # Bottom sidebar: settings
-        if lang=="en":
-            self.settings_btn = QPushButton("⚙  Settings")
-        elif lang=="fr":
-            self.settings_btn = QPushButton("⚙  Parametres")
+        
+        self.settings_btn = QPushButton(f"⚙  {LANG.get("settings")}")
         self.settings_btn.setObjectName("iconic")
         self.settings_btn.setFixedHeight(48)
         self.settings_btn.setCursor(Qt.CursorShape.PointingHandCursor)

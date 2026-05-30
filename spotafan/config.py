@@ -4,6 +4,8 @@ from pathlib import Path
 
 
 class Config:
+    
+
     APP_NAME = "SpotAFan"
     VERSION = "1.0.0"
     APP_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -21,16 +23,19 @@ class Config:
     DB_PATH = _data_dir / "library.db"
     CONFIG_FILE = _config_dir / "settings.json"
 
+
     DEFAULT_SETTINGS = {
         "download_directory": str(DOWNLOAD_DIR),
         "max_concurrent_downloads": 3,
         "audio_format": "mp3",
         "audio_quality": "192",
-        "theme": "dark",
+        "theme": "light",
         "volume": 80,
         "lang": "en",
         "current_song": "",
     }
+
+    
 
     _settings = dict(DEFAULT_SETTINGS)
 
@@ -47,9 +52,13 @@ class Config:
             try:
                 with open(cls.CONFIG_FILE) as f:
                     cls._settings.update(json.load(f))
+                
             except (json.JSONDecodeError, OSError):
                 pass
+    
 
+   
+            
     @classmethod
     def save_settings(cls):
         cls.ensure_dirs()

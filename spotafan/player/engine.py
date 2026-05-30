@@ -2,6 +2,7 @@ import random
 from PySide6.QtCore import QObject, Signal, QUrl, QTimer
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from spotafan.config import Config
+from spotafan.Lang import LANG
 
 class PlayerEngine(QObject):
     song_changed = Signal(dict)
@@ -16,11 +17,13 @@ class PlayerEngine(QObject):
         self._audio = QAudioOutput(parent)
         self._player.setAudioOutput(self._audio)
         Config.load_settings()
+        LANG.load_settings()
+
         self._playlist = []
         self._current_index = -1
         self._shuffle = False
         self._repeat = False
-        self._current_song = None
+        self._current_song = Config.get("current_song")
 
         self._player.positionChanged.connect(
             lambda pos: self.position_changed.emit(pos / 1000.0)
@@ -58,12 +61,12 @@ class PlayerEngine(QObject):
         self._load_current()
 
     def play_song(self, song):
-        self._current_song = song
-        print(f"saving current song : {song["id"]}")
-        Config.set("current_song", self._current_song["id"])
-        self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
-        self._player.play()
-        self.song_changed.emit(song)
+        if not song==None:
+            self._current_song = song
+            Config.set("current_song", self._current_song)
+            self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
+            self._player.play()
+            self.song_changed.emit(song)
 
     def _load_current(self):
         if 0 <= self._current_index < len(self._playlist):

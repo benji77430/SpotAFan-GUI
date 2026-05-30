@@ -4,6 +4,7 @@ from pathlib import Path
 from PySide6.QtCore import QObject, Signal
 
 from spotafan.config import Config
+from spotafan.Lang import LANG
 
 
 class LibraryManager(QObject):
@@ -12,6 +13,7 @@ class LibraryManager(QObject):
     def __init__(self, database, parent=None):
         super().__init__(parent)
         self._db = database
+        LANG.load_settings()
 
     def get_all_songs(self):
         return self._db.get_all_songs()
@@ -52,7 +54,7 @@ class LibraryManager(QObject):
 
         audio = mutagen.File(file_path)
         title = str(audio.get("title", [path.stem])[0]) if audio else path.stem
-        artist = str(audio.get("artist", ["Unknown Artist"])[0]) if audio else "Unknown Artist"
+        artist = str(audio.get("artist", ["Unknown Artist"])[0]) if audio else LANG.get("unknown_artist")
         album = str(audio.get("album", ["Unknown Album"])[0]) if audio else "Unknown Album"
         duration = audio.info.length if audio and hasattr(audio.info, "length") else 0
 

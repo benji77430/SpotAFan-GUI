@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QSlider, QWidget, QSizePolicy,
 )
 from spotafan.player.engine import PlayerEngine
+from spotafan.Lang import LANG
 
 
 class PlayerBar(QFrame):
@@ -32,8 +33,13 @@ class PlayerBar(QFrame):
         self.thread_title.start()
         self.thread_artist = threading.Thread(target=self._artist_rotate)
         self.thread_artist.start()
+<<<<<<< HEAD
         self.old_volume = 50
 
+=======
+        self.old_volume=50
+        LANG.load_settings()
+>>>>>>> 7fb9e0e4af4e8b1c0717bae8236c59789ebe544f
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
@@ -58,10 +64,10 @@ class PlayerBar(QFrame):
 
         info_vbox = QVBoxLayout()
         info_vbox.setSpacing(4)
-        self._song_title = QLabel("No track playing")
+        self._song_title = QLabel()
         self._song_title.setObjectName("title")
         self._song_title.setStyleSheet("font-size: 14px;")
-        self._song_artist = QLabel("")
+        self._song_artist = QLabel(LANG.get("notrack"))
         self._song_artist.setObjectName("subtitle")
         info_vbox.addWidget(self._song_title)
         info_vbox.addWidget(self._song_artist)
@@ -86,15 +92,15 @@ class PlayerBar(QFrame):
         controls.setSpacing(16)
         controls.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self._shuffle_btn = self._make_ctrl_btn("🔀", "Shuffle")
+        self._shuffle_btn = self._make_ctrl_btn("🔀", LANG.get("shuffle"))
         self._shuffle_btn.setStyleSheet("font-size: 16px;")
         controls.addWidget(self._shuffle_btn)
 
-        self._prev_btn = self._make_ctrl_btn("⏮", "Previous")
+        self._prev_btn = self._make_ctrl_btn("⏮", LANG.get("previous"))
         self._prev_btn.setStyleSheet("font-size: 16px;")
         controls.addWidget(self._prev_btn)
 
-        self._play_btn = self._make_ctrl_btn("▶", "Play", bold=True, big=True)
+        self._play_btn = self._make_ctrl_btn("▶", LANG.get("play"), bold=True, big=True)
         self._play_btn.setFixedSize(40, 40)
         self._play_btn.setStyleSheet("""
             QPushButton {
@@ -106,11 +112,11 @@ class PlayerBar(QFrame):
         """)
         controls.addWidget(self._play_btn)
 
-        self._next_btn = self._make_ctrl_btn("⏭", "Next")
+        self._next_btn = self._make_ctrl_btn("⏭", LANG.get("next"))
         self._next_btn.setStyleSheet("font-size: 16px;")
         controls.addWidget(self._next_btn)
 
-        self._repeat_btn = self._make_ctrl_btn("🔁", "Repeat")
+        self._repeat_btn = self._make_ctrl_btn("🔁", LANG.get("repeat"))
         self._repeat_btn.setStyleSheet("font-size: 14px;")
         controls.addWidget(self._repeat_btn)
 
@@ -167,7 +173,7 @@ class PlayerBar(QFrame):
         container_layout.setContentsMargins(8, 4, 8, 4)
 
         # 3. Tes variables d'origine (strictement inchangées) ajoutées dans le rectangle
-        self._vol_btn = self._make_ctrl_btn("🔊", "Volume")
+        self._vol_btn = self._make_ctrl_btn("🔊", LANG.get("volume"))
         container_layout.addWidget(self._vol_btn)
 
         self._volume_slider = QSlider(Qt.Orientation.Horizontal)
@@ -226,8 +232,8 @@ class PlayerBar(QFrame):
             self._engine.volume = self.old_volume
 
     def _on_song_changed(self, song):
-        self.title = song.get("title", "Unknown")
-        self.artist = song.get("artist", "Unknown Artist")
+        self.title = song.get("title", LANG.get("unknown_track"))
+        self.artist = song.get("artist", LANG.get("unknown_artist"))
         
         self._song_title.setStyleSheet(
             "font-size: 14px; font-weight: bold; color: #ffffff;"

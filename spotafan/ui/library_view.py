@@ -1,5 +1,7 @@
 import os
 from spotafan.config import Config
+from spotafan.player.engine import PlayerEngine
+from spotafan.Lang import LANG
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
@@ -22,6 +24,8 @@ class LibraryView(QFrame):
     def __init__(self, library_manager, database, parent=None):
         super().__init__(parent)
         Config.load_settings()
+        LANG.load_settings()
+
         self._library = library_manager
         self._db = database
         self._songs = []
@@ -29,8 +33,6 @@ class LibraryView(QFrame):
         self._setup_ui()
         self._connect_signals()
         self.refresh()
-        self.play_song_requested.emit(Config.get("current_song","1"))
-
 
 
     def _setup_ui(self):
@@ -40,12 +42,12 @@ class LibraryView(QFrame):
 
         # Header
         header = QHBoxLayout()
-        title = QLabel("Your Library")
+        title = QLabel(LANG.get("your_playlist"))
         title.setObjectName("header")
         header.addWidget(title)
         header.addStretch()
 
-        self._count_label = QLabel("0 songs")
+        self._count_label = QLabel(f"0 {LANG.get("songs")}")
         self._count_label.setObjectName("subtitle")
         header.addWidget(self._count_label)
         layout.addLayout(header)
@@ -53,11 +55,11 @@ class LibraryView(QFrame):
         # Search bar
         search_row = QHBoxLayout()
         self._search_input = QLineEdit()
-        self._search_input.setPlaceholderText("Search in your library...")
+        self._search_input.setPlaceholderText(LANG.get("search_in_librairy"))
         self._search_input.setClearButtonEnabled(True)
         search_row.addWidget(self._search_input, stretch=1)
 
-        self._import_btn = QPushButton("Import Local Files")
+        self._import_btn = QPushButton(LANG.get("import"))
         self._import_btn.setStyleSheet(
             "background-color: transparent; border: 1px solid #535353; "
             "border-radius: 20px; padding: 8px 20px; color: #ffffff;"
@@ -74,7 +76,7 @@ class LibraryView(QFrame):
         self._table = QTableWidget()
         self._table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._table.setColumnCount(4)
-        self._table.setHorizontalHeaderLabels(["", "Title", "Artist", "Duration"])
+        self._table.setHorizontalHeaderLabels(["", LANG.get("title"), LANG.get("artist"), LANG.get("duration")])
         self._table.setColumnWidth(0, 40)
         self._table.horizontalHeader().setStretchLastSection(False)
         self._table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
@@ -119,11 +121,11 @@ class LibraryView(QFrame):
             play.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self._table.setItem(row, 0, play)
 
-            title_item = QTableWidgetItem(song.get("title", "Unknown"))
+            title_item = QTableWidgetItem(song.get("title", LANG.get("unknown_track")))
             title_item.setData(Qt.ItemDataRole.UserRole, song["id"])
             self._table.setItem(row, 1, title_item)
 
-            artist_item = QTableWidgetItem(song.get("artist", "Unknown Artist"))
+            artist_item = QTableWidgetItem(song.get("artist", LANG.get("unknown_artist")))
             self._table.setItem(row, 2, artist_item)
 
             dur = song.get("duration", 0)
@@ -135,7 +137,7 @@ class LibraryView(QFrame):
 
             self._table.setRowHeight(row, 48)
 
-        self._count_label.setText(f"{len(songs)} song{'s' if len(songs) != 1 else ''}")
+        self._count_label.setText(f"{len(songs)}  {LANG.get("songs")}")
 
     def _on_item_double_clicked(self, item):
         row = item.row()
@@ -159,10 +161,10 @@ class LibraryView(QFrame):
             QMenu::item:selected { background-color: #1db954; }
         """)
 
-        play_act = menu.addAction("▶ Play")
-        play_next = menu.addAction("⏭ Play Next")
+        play_act = menu.addAction(f"▶ {LANG.get("play")}")
+        play_next = menu.addAction(f"⏭ {LANG.get("play_next")}")
         menu.addSeparator()
-        delete_act = menu.addAction("🗑 Delete from Library")
+        delete_act = menu.addAction(f"🗑 {LANG.get("delete_from_lib")}")
 
         action = menu.exec(self._table.mapToGlobal(pos))
 
@@ -175,9 +177,9 @@ class LibraryView(QFrame):
 
     def _delete_song(self, song):
         reply = QMessageBox.question(
-            self, "Delete Song",
-            f'Delete "{song.get("title")}" from library?'
-            "\nThe file will also be removed from disk.",
+            self, LANG.get("delete_song"),
+            f'{LANG.get("delete")} "{song.get("title")}" {LANG.get("from_lib")}'
+            f"\n{LANG.get("will_also_be_removed_from_disk")}",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
         )
@@ -187,7 +189,7 @@ class LibraryView(QFrame):
     def _import_file(self):
         from PySide6.QtWidgets import QFileDialog
         files, _ = QFileDialog.getOpenFileNames(
-            self, "Import Music Files", "",
+            self, LANG.get("import"), "",
             "Audio Files (*.mp3 *.flac *.ogg *.wav *.m4a *.wma);;All Files (*)",
         )
         for fp in files:
