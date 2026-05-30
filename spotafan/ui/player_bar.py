@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (
     QFrame, QHBoxLayout, QVBoxLayout, QPushButton, QLabel,
     QSlider, QWidget, QSizePolicy,
 )
+from spotafan.player.engine import PlayerEngine
 
 
 class PlayerBar(QFrame):
@@ -28,6 +29,7 @@ class PlayerBar(QFrame):
         self.thread_title.start()
         self.thread_artist=threading.Thread(target=self._artist_rotate)
         self.thread_artist.start()
+        self.old_volume=50
     def _setup_ui(self):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 8, 16, 8)
@@ -201,12 +203,24 @@ class PlayerBar(QFrame):
         self._next_btn.clicked.connect(self._engine.next)
         self._shuffle_btn.clicked.connect(self._toggle_shuffle)
         self._repeat_btn.clicked.connect(self._toggle_repeat)
+        self._vol_btn.clicked.connect(self._mute_volume)
 
         self._progress_slider.sliderPressed.connect(
             lambda: setattr(self, '_is_dragging', True)
         )
         self._progress_slider.sliderReleased.connect(self._seek_to_position)
         self._volume_slider.valueChanged.connect(self._on_volume_changed)
+
+    def _mute_volume(self):
+        if self._engine.volume > 0:
+            self.old_volume=self._engine.volume
+            self._volume_slider.setValue(0)
+            PlayerEngine.volume(0)
+            self._engine.volume=0
+        elif self._engine.volume == 0:
+            self._volume_slider.setValue(self.old_volume)
+            PlayerEngine.volume(self.old_volume)
+            self._engine.volume=self.old_volume
 
     def _on_song_changed(self, song):
         self.title = song.get("title", "Unknown")
