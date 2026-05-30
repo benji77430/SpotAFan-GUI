@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,Signal
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QStackedWidget, QFrame, QLabel,
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.setSpacing(0)
 
         # Logo / Brand
-        brand = QLabel("  SpotAFan")
+        brand = QLabel("   SpotAFan")
         brand.setStyleSheet("""
             font-size: 20px; font-weight: bold; color: #1db954;
             padding: 20px 16px;
@@ -70,12 +70,20 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(brand)
 
         # Nav buttons
+        lang=Config.get("lang", "en")
         self._nav_btns = {}
-        nav_items = [
-            ("library", "🎵  Your Library"),
-            ("search", "🔍  Search & Download"),
-            ("downloads", "⬇  Downloads"),
-        ]
+        if lang=="en":
+            nav_items = [
+                ("library", "🎵  Your Playlist"),
+                ("search", "🔍  Explore"),
+                ("downloads", "⬇  Downloads"),
+            ]
+        elif lang=="fr":
+            nav_items = [
+                ("library", "🎵  Ma Playlist"),
+                ("search", "🔍  Explorer"),
+                ("downloads", "⬇  Téléchargements"),
+            ]
         for key, label in nav_items:
             btn = QPushButton(label)
             btn.setObjectName("iconic")
@@ -101,11 +109,14 @@ class MainWindow(QMainWindow):
         sidebar_layout.addStretch()
 
         # Bottom sidebar: settings
-        settings_btn = QPushButton("⚙  Settings")
-        settings_btn.setObjectName("iconic")
-        settings_btn.setFixedHeight(48)
-        settings_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        settings_btn.setStyleSheet("""
+        if lang=="en":
+            self.settings_btn = QPushButton("⚙  Settings")
+        elif lang=="fr":
+            self.settings_btn = QPushButton("⚙  Parametres")
+        self.settings_btn.setObjectName("iconic")
+        self.settings_btn.setFixedHeight(48)
+        self.settings_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.settings_btn.setStyleSheet("""
             QPushButton {
                 text-align: left; padding: 12px 16px;
                 font-size: 14px; border-radius: 0;
@@ -113,7 +124,7 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover { color: #ffffff; }
         """)
-        sidebar_layout.addWidget(settings_btn)
+        sidebar_layout.addWidget(self.settings_btn)
 
         content_layout.addWidget(sidebar)
 
@@ -150,6 +161,9 @@ class MainWindow(QMainWindow):
         self._nav_btns["downloads"].clicked.connect(
             lambda: self._switch_view(2)
         )
+        self.settings_btn.clicked.connect(
+            lambda: self._switch_view(3)
+        )
 
         self._library_view.play_song_requested.connect(self._play_song)
         self._download_view.song_ready.connect(self._library_view.refresh)
@@ -157,7 +171,7 @@ class MainWindow(QMainWindow):
     def _switch_view(self, index):
         self._stack.setCurrentIndex(index)
         for i, (key, btn) in enumerate(self._nav_btns.items()):
-            names = ["library", "search", "downloads"]
+            names = ["library", "search", "downloads","settings"]
             btn.setChecked(key == names[index])
 
     def _play_song(self, song):
@@ -176,5 +190,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         Config.set("volume", self._engine.volume)
+        Config.set("current_song",PlayerEngine.current_song)
         self._engine.cleanup()
         super().closeEvent(event)

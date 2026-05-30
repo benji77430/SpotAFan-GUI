@@ -12,16 +12,20 @@ from spotafan.main_window import MainWindow
 
 
 def main():
+
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
     Config.ensure_dirs()
     Config.load_settings()
 
     app = QApplication(sys.argv)
     app.setApplicationName(Config.APP_NAME)
     app.setApplicationVersion(Config.VERSION)
-
+    
     window = MainWindow()
     window.show()
-
+    window.setWindowIcon(QIcon("logo.ico"))
+    
     sys.exit(app.exec())
 
 

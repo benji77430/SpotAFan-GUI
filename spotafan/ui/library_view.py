@@ -1,11 +1,19 @@
 import os
+from spotafan.config import Config
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
     QTableWidget, QTableWidgetItem, QHeaderView, QLineEdit,
-    QMenu, QFrame, QAbstractItemView, QMessageBox,
+    QMenu, QFrame, QAbstractItemView, QMessageBox,QStyledItemDelegate,QStyle,
 )
 
+class NoFocusDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        # Safely remove ONLY the focus state using a bitwise AND + NOT mask
+        if option.state & QStyle.StateFlag.State_HasFocus:
+            option.state &= ~QStyle.StateFlag.State_HasFocus
+        super().paint(painter, option, index)
 
 class LibraryView(QFrame):
     play_song_requested = Signal(dict)
@@ -13,6 +21,7 @@ class LibraryView(QFrame):
 
     def __init__(self, library_manager, database, parent=None):
         super().__init__(parent)
+        Config.load_settings()
         self._library = library_manager
         self._db = database
         self._songs = []
@@ -20,6 +29,9 @@ class LibraryView(QFrame):
         self._setup_ui()
         self._connect_signals()
         self.refresh()
+        self.play_song_requested.emit(Config.get("current_song","1"))
+
+
 
     def _setup_ui(self):
         layout = QVBoxLayout(self)
@@ -60,6 +72,7 @@ class LibraryView(QFrame):
 
         # Table
         self._table = QTableWidget()
+        self._table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._table.setColumnCount(5)
         self._table.setHorizontalHeaderLabels(["", "Title", "Artist", "Duration", ""])
         self._table.setColumnWidth(0, 40)
