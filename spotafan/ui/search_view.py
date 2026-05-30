@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QListWidget, QListWidgetItem, QFrame, QProgressBar,
     QScrollArea,
 )
-
+import requests
 from spotafan.config import Config
 from spotafan.Lang import LANG
 
@@ -36,7 +36,7 @@ class SearchView(QFrame):
         self._search_input.setPlaceholderText(LANG.get("searchonyt"))
         search_row.addWidget(self._search_input, stretch=1)
 
-        self._search_btn = QPushButton(f"🔍 {LANG.get("search")}")
+        self._search_btn = QPushButton(f"🔍 {LANG.get('search')}")
         self._search_btn.setFixedWidth(120)
         search_row.addWidget(self._search_btn)
         layout.addLayout(search_row)
@@ -94,16 +94,27 @@ class SearchView(QFrame):
     def _on_search_results(self, results):
         self._results = results
         self._clear_results()
-        self._status_label.setText(
-            f"Found {len(results)} result{'s' if len(results) != 1 else ''}"
-        )
-
+        
         if not results:
+            self._status_label.setText("Found 0 results")
             self._results_layout.addWidget(self._empty_label)
             self._results_layout.addStretch()
             return
 
+        self._status_label.setText(
+            f"Found {len(results)} result{'s' if len(results) != 1 else ''}"
+        )
+
+        # On parcourt chaque résultat et on cherche la cover si YouTube n'en fournit pas
         for res in results:
+            thumb_url = res.get("thumbnail", "")
+            if not thumb_url:
+                # On extrait proprement le titre et l'artiste de chaque chanson retournée
+                t = res.get("title", "")
+                a = res.get("artist", "")
+                thumb_url = self.fetch_track_cover(t, a)
+                res["thumbnail"] = thumb_url  # On l'enregistre dans le dictionnaire
+
             card = self._create_result_card(res)
             self._results_layout.addWidget(card)
 
@@ -126,14 +137,39 @@ class SearchView(QFrame):
         row.setContentsMargins(12, 8, 12, 8)
         row.setSpacing(12)
 
-        # Thumbnail placeholder
-        thumb = QLabel("🎵")
-        thumb.setFixedSize(48, 48)
-        thumb.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        thumb.setStyleSheet(
-            "background-color: #333; border-radius: 4px; font-size: 20px;"
-        )
-        row.addWidget(thumb)
+        # Image de miniature (Label)
+        thumb_label = QLabel()
+        thumb_label.setFixedSize(48, 48)
+        thumb_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # Chargement de l'image (Locale ou Distante via iTunes/YouTube)
+        thumb_url = result.get("thumbnail", "")
+        loaded_successfully = False
+        
+        if thumb_url:
+            try:
+                from PySide6.QtGui import QPixmap
+                pixmap = QPixmap()
+                response = requests.get(thumb_url, timeout=3)
+                if response.status_code == 200 and pixmap.loadFromData(response.content):
+                    thumb_label.setPixmap(
+                        pixmap.scaled(
+                            48, 48,
+                            Qt.AspectRatioMode.KeepAspectRatio,
+                            Qt.TransformationMode.SmoothTransformation,
+                        )
+                    )
+                    loaded_successfully = True
+            except Exception:
+                pass
+
+        if not loaded_successfully:
+            thumb_label.setText("🎵")
+            thumb_label.setStyleSheet(
+                "background-color: #333; border-radius: 4px; font-size: 20px; color: #ffffff;"
+            )
+
+        row.addWidget(thumb_label)
 
         # Info
         info = QVBoxLayout()
@@ -143,7 +179,7 @@ class SearchView(QFrame):
         title.setWordWrap(True)
         info.addWidget(title)
 
-        sub = QLabel(f"{result.get('artist', LANG.get("unknown_artist"))}  ·  "
+        sub = QLabel(f"{result.get('artist', LANG.get('unknown_artist'))}  ·  "
                      f"{self._format_time(result.get('duration', 0))}")
         sub.setStyleSheet("font-size: 11px; color: #b3b3b3;")
         info.addWidget(sub)
@@ -166,6 +202,24 @@ class SearchView(QFrame):
         row.addWidget(download_btn)
 
         return card
+
+    @staticmethod
+    def fetch_track_cover(title, artist=""):
+        """Recherche automatique via l'API publique et gratuite d'iTunes."""
+        if not title or title == LANG.get("unknown_track"):
+            return ""
+        query = f"{title} {artist}".strip()
+        url = f"https://itunes.apple.com/search?term={requests.utils.quote(query)}&entity=song&limit=1"
+        try:
+            response = requests.get(url, timeout=3)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("resultCount", 0) > 0:
+                    cover_url = data["results"][0]["artworkUrl100"]
+                    return cover_url.replace("100x100bb", "600x600bb")
+        except Exception as e:
+            print(f"Erreur de jaquette de recherche: {e}")
+        return ""
 
     def _download_song(self, result):
         self._downloader.start_download(result)
