@@ -31,7 +31,13 @@
         "repeat":"repeat",
         "next":"next",
         "volume":"Volume",
-        "active_downloads":"active downloads"
+        "active_downloads":"Active Downloads",
+        "clear_complete":"Clear Complete",
+        "status":"status",
+        "progress":"Progress",
+        "pending":"pending",
+        "processing":"processing",
+        "cleared":"cleared"
     },
     "fr": {
         "your_playlist": "Ma Playlist",
@@ -65,7 +71,14 @@
         "repeat":"Répeter",
         "next":"Suivant",
         "volume":"Volume",
-        "active_downloads":"active downloads"
+        "active_downloads":"Téléchargements Actifs",
+        "clear_complete":"Effacer Tout",
+        "status":"status",
+        "progress":"Progression",
+        "pending":"en cours",
+        "processing":"finalisation",
+        "cleared":"effacer"
+
 
 
 

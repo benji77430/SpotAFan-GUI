@@ -25,7 +25,7 @@ class DownloadView(QFrame):
         layout.setContentsMargins(24, 24, 24, 24)
         layout.setSpacing(16)
 
-        title = QLabel("Download")
+        title = QLabel(LANG.get("download"))
         title.setObjectName("header")
         layout.addWidget(title)
 
@@ -49,7 +49,7 @@ class DownloadView(QFrame):
         self._table = QTableWidget()
         self._table.setColumnCount(5)
         self._table.setHorizontalHeaderLabels([
-            "Title", "Artist", "Status", "Progress", ""
+            LANG.get("title"), LANG.get("artist"), LANG.get("status"), LANG.get("progress"), ""
         ])
         self._table.horizontalHeader().setSectionResizeMode(
             0, QHeaderView.ResizeMode.Stretch
@@ -83,21 +83,21 @@ class DownloadView(QFrame):
 
     def _refresh(self):
         downloads = self._downloader.get_downloads()
-        active = [d for d in downloads if d["status"] in ("pending", "starting", "downloading", "processing")]
-        self._queue_count.setText(f"{len(active)} active download{'s' if len(active) != 1 else ''}")
+        active = [d for d in downloads if d["status"] in (LANG.get("pending"), LANG.get("starting"), LANG.get("downloading"), LANG.get("processing"))]
+        self._queue_count.setText(f"{len(active)} {LANG.get("active_downloads")}")
         self._populate_table(downloads)
 
     def _populate_table(self, downloads):
         self._table.setRowCount(len(downloads))
         for row, d in enumerate(downloads):
-            title_item = QTableWidgetItem(d.get("title", "Unknown"))
+            title_item = QTableWidgetItem(d.get("title", LANG.get("unknown_track")))
             title_item.setData(Qt.ItemDataRole.UserRole, d["id"])
             self._table.setItem(row, 0, title_item)
 
-            artist_item = QTableWidgetItem(d.get("artist", "Unknown Artist"))
+            artist_item = QTableWidgetItem(d.get("artist", LANG.get("unknown_artist")))
             self._table.setItem(row, 1, artist_item)
 
-            status = d.get("status", "unknown")
+            status = d.get("status", LANG.get("unknown_track"))
             status_item = QTableWidgetItem(status.capitalize())
             status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             if status == "completed":
