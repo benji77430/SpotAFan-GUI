@@ -273,9 +273,6 @@ class PlayerBar(QFrame):
         self._engine.volume = value
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
-<<<<<<< HEAD
-    
-=======
 
     def _title_rotate(self):
         CLOSE=False
@@ -318,7 +315,6 @@ class PlayerBar(QFrame):
 
                 
             time.sleep(0.05)
->>>>>>> f0867f7f5a784f3e5698c406eb8e80333ddeea22
     @staticmethod
     def _format_time(seconds):
         if seconds < 0:
