@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sys
 import os
-
-os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
+if os.name != "nt":
+    os.environ["QT_QPA_PLATFORMTHEME"] = "gtk3"
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon
