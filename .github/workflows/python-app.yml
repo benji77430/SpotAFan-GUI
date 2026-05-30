@@ -36,7 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Compiling
       run: |
-        pyinstaller --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
+        pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
     - name: Upload Executable Artifact
       uses: actions/upload-artifact@v4
       with:
