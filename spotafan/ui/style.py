@@ -61,8 +61,6 @@ QListWidget:focus, QTableWidget:focus, QTreeWidget:focus {
 }
 QListWidget::item, QTableWidget::item, QTreeWidget::item {
     padding: 8px 12px;
-    border: rgba(255, 255, 255, 0.5) 2px solid;
-    border-radius: 4px;
     outline: none;
 }
 QListWidget::item:selected, QTableWidget::item:selected, QTreeWidget::item:selected {
