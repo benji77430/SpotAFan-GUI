@@ -113,6 +113,10 @@ QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
     width: 0;
 }
 
+QSlider {
+    background: transparent;
+}
+
 QSlider::groove:horizontal {
     background: #535353;
     height: 4px;

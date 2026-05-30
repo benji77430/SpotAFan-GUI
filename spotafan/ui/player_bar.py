@@ -140,14 +140,34 @@ class PlayerBar(QFrame):
         right.setSpacing(8)
         right.setAlignment(Qt.AlignmentFlag.AlignRight)
 
+        # 1. Création d'un widget conteneur qui accepte le dessin d'arrière-plan
+        volume_container = QWidget()
+        volume_container.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        volume_container.setObjectName("VolumeContainer")
+        volume_container.setStyleSheet("""
+            QWidget#VolumeContainer {
+                background-color: #121212;
+                border-radius: 6px;
+            }
+        """)
+
+        # 2. Layout interne du rectangle pour mettre les éléments côte à côte
+        container_layout = QHBoxLayout(volume_container)
+        container_layout.setSpacing(8)
+        container_layout.setContentsMargins(8, 4, 8, 4) # Ajoute un padding interne automatique
+
+        # 3. Tes variables d'origine (strictement inchangées) ajoutées dans le rectangle
         self._vol_btn = self._make_ctrl_btn("🔊", "Volume")
-        right.addWidget(self._vol_btn)
+        container_layout.addWidget(self._vol_btn)
 
         self._volume_slider = QSlider(Qt.Orientation.Horizontal)
         self._volume_slider.setRange(0, 100)
         self._volume_slider.setFixedWidth(120)
         self._volume_slider.setValue(self._engine.volume)
-        right.addWidget(self._volume_slider)
+        container_layout.addWidget(self._volume_slider)
+
+        # 4. On ajoute le rectangle complet dans ton layout de droite d'origine
+        right.addWidget(volume_container)
 
         layout.addLayout(right)
 
@@ -160,7 +180,7 @@ class PlayerBar(QFrame):
         style = "font-size: 18px;" if big else "font-size: 16px;"
         if bold:
             style += " font-weight: bold;"
-        style += " background: transparent; border: none; color: #b3b3b3;"
+        style += " background: transparent; border: none; color: #000000;"
         style += " QPushButton:hover { color: #ffffff; }"
         btn.setStyleSheet(style)
         return btn
@@ -249,12 +269,7 @@ class PlayerBar(QFrame):
         self._engine.volume = value
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
-
-    def _title_rotate(self):
-        self._song_title
-        
-        raise NotImplementedError
-
+    
     @staticmethod
     def _format_time(seconds):
         if seconds < 0:
