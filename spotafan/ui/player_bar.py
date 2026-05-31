@@ -203,7 +203,7 @@ class PlayerBar(QFrame):
         self._engine.position_changed.connect(self._on_position_changed)
         self._engine.duration_changed.connect(self._on_duration_changed)
         self._engine.state_changed.connect(self._on_state_changed)
-
+        self._engine.volume_changed.connect(self._on_engine_volume_changed)
         self._play_btn.clicked.connect(self._engine.toggle_play_pause)
         self._prev_btn.clicked.connect(self._engine.previous)
         self._next_btn.clicked.connect(self._engine.next)
@@ -301,6 +301,18 @@ class PlayerBar(QFrame):
 
     def _on_volume_changed(self, value):
         self._engine.volume = value
+        icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
+        self._vol_btn.setText(icon)
+
+    def _on_engine_volume_changed(self, value):
+        """Updates the slider position when volume changes via shortcuts."""
+        # blockSignals prevents the slider from triggering _on_volume_changed 
+        # back to the engine unnecessarily while we update it
+        self._volume_slider.blockSignals(True)
+        self._volume_slider.setValue(value)
+        self._volume_slider.blockSignals(False)
+        
+        # Update the speaker icon (Mute/Low/High)
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
 

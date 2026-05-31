@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QPushButton, QStackedWidget, QFrame, QLabel,
     QSizePolicy, QApplication,
 )
-
+from PySide6.QtGui import QKeySequence, QShortcut
 from spotafan.config import Config
 from spotafan.Lang import LANG
 from spotafan.database import Database
@@ -37,6 +37,9 @@ class MainWindow(QMainWindow):
         self._setup_ui()
         self._connect_signals()
         self._restore_volume()
+        self._setup_shortcuts()
+        if not Config.get("current_song",None) == None:
+            self._play_song(Config.get("current_song"),restart=True)
 
 
     def _setup_window(self):
@@ -145,6 +148,8 @@ class MainWindow(QMainWindow):
         self._nav_btns["library"].setChecked(True)
         self._stack.setCurrentIndex(0)
 
+        
+
     def _connect_signals(self):
         self._nav_btns["library"].clicked.connect(
             lambda: self._switch_view(0)
@@ -168,15 +173,15 @@ class MainWindow(QMainWindow):
             names = ["library", "search", "downloads","settings"]
             btn.setChecked(key == names[index])
 
-    def _play_song(self, song):
+    def _play_song(self, song,restart=False):
         self._engine.set_playlist(self._library_mgr.get_all_songs())
         songs = self._library_mgr.get_all_songs()
         for i, s in enumerate(songs):
             if s["id"] == song["id"]:
-                self._engine.set_playlist(songs, start_index=i)
+                self._engine.set_playlist(songs, start_index=i,restart=restart)
                 break
         else:
-            self._engine.play_song(song)
+            self._engine.play_song(song,restart=restart)
 
     def _restore_volume(self):
         vol = Config.get("volume", 80)
@@ -187,3 +192,25 @@ class MainWindow(QMainWindow):
         self._player_bar.running=False
         self._engine.cleanup()
         super().closeEvent(event)
+
+
+    def _setup_shortcuts(self):
+        # Spacebar -> Play / Pause
+        self.shortcut_space = QShortcut(QKeySequence(Qt.Key.Key_Space), self)
+        self.shortcut_space.activated.connect(self._engine.toggle_play_pause)
+
+        # Up Arrow -> Volume Up
+        self.shortcut_up = QShortcut(QKeySequence(Qt.Key.Key_Up), self)
+        self.shortcut_up.activated.connect(lambda: self._engine.set_volume(min(100, self._engine.volume + 5)))
+
+        # Down Arrow -> Volume Down
+        self.shortcut_down = QShortcut(QKeySequence(Qt.Key.Key_Down), self)
+        self.shortcut_down.activated.connect(lambda: self._engine.set_volume(max(0, self._engine.volume - 5)))
+
+        # Left Arrow -> Seek Back 5s
+        self.shortcut_left = QShortcut(QKeySequence(Qt.Key.Key_Left), self)
+        self.shortcut_left.activated.connect(lambda: self._engine.step_position(-5))
+
+        # Right Arrow -> Seek Forward 5s
+        self.shortcut_right = QShortcut(QKeySequence(Qt.Key.Key_Right), self)
+        self.shortcut_right.activated.connect(lambda: self._engine.step_position(5))
