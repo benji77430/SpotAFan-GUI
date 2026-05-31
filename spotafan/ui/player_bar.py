@@ -23,20 +23,12 @@ BOOTSTRAP_SVGs = {
     "volume_mute": '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16"><path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06zm7.137 2.096a.5.5 0 0 1 0 .708L11.707 8.5l2.147 2.146a.5.5 0 0 1-.708.708L11 9.207l-2.146 2.147a.5.5 0 0 1-.708-.708L10.293 8.5 8.146 6.354a.5.5 0 1 1 .708-.708L11 7.793l2.146-2.147a.5.5 0 0 1 .707 0z"/></svg>'
 }
 
-def check_internet(ip="8.8.8.8",port=53,timeout=2):
-    try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((ip,port))
-        return True
-    except socket.error as ex:
-        print(ex)
-        return False
+
 
 class PlayerBar(QFrame):
     def __init__(self, engine, parent=None):
         super().__init__(parent)
         LANG.load_settings()
-        self.internet=check_internet()
         self.running=True
         self._engine = engine
         self._is_dragging = False
@@ -426,7 +418,15 @@ class PlayerBar(QFrame):
     @staticmethod
     def fetch_track_cover(title, artist=""):
         """Recherche automatique via l'API publique et gratuite d'iTunes."""
-        if self.internet:
+        def check_internet(ip="8.8.8.8",port=53,timeout=2):
+            try:
+                socket.setdefaulttimeout(timeout)
+                socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((ip,port))
+                return True
+            except socket.error as ex:
+                print(ex)
+                return False
+        if check_internet():
             query = f"{title} {artist}".strip()
             url = f"https://itunes.apple.com/search?term={requests.utils.quote(query)}&entity=song&limit=1"
             try:

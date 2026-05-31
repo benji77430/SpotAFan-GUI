@@ -38,7 +38,19 @@
         "progress": "Progress",
         "pending": "Pending",
         "processing": "Processing",
-        "cleared": "Cleared"
+        "cleared": "Cleared",
+        "language": "Language",
+        "appearence": "Appearence",
+        "downloads_and_storage": "Downloads & Storage",
+        "language_preferences": "Languages preferences",
+        "app_language": "App language",
+        "app_lang_desc": "Changes the language across menus, text rows, and error screens.",
+        "themes": "Appearence & Themes",
+        "color_theme": "Color themes",
+        "choose_theme": "Choose a clean look for your application frame layouts.",
+        "download_location": "Download location",
+        "change_folder": "Change folder",
+        "select_destination": "Select Download Destination"
     },
     "fr": {
         "your_playlist": "Ma Playlist",
@@ -79,7 +91,19 @@
         "progress": "Progression",
         "pending": "En attente",
         "processing": "Traitement...",
-        "cleared": "Effacé"
+        "cleared": "Effacé",
+        "language": "Langue",
+        "appearence": "Apparence",
+        "downloads_and_storage": "Téléchargements & Stockage",
+        "language_preferences": "Préférences de langue",
+        "app_language": "Langue de l'application",
+        "app_lang_desc": "Modifie la langue des menus, des listes de texte et des écrans d'erreur.",
+        "themes": "Apparence & Thèmes",
+        "color_theme": "Thèmes de couleur",
+        "choose_theme": "Choisissez une apparence épurée pour les fenêtres de votre application.",
+        "download_location": "Emplacement de téléchargement",
+        "change_folder": "Changer de dossier",
+        "select_destination": "Sélectionner la destination de téléchargement"
     },
     "es": {
         "your_playlist": "Tu Playlist",
@@ -89,7 +113,7 @@
         "unknown_track": "Desconocido",
         "unknown_artist": "Artista Desconocido",
         "songs": "canción(es)",
-        "import": "Importar archivos locales",
+        "import": "Importar archivos locais",
         "search_in_librairy": "Buscar en tu biblioteca...",
         "title": "Título",
         "artist": "Artista",
@@ -120,7 +144,19 @@
         "progress": "Progreso",
         "pending": "Pendiente",
         "processing": "Procesando",
-        "cleared": "Limpiado"
+        "cleared": "Limpiado",
+        "language": "Idioma",
+        "appearence": "Apariencia",
+        "downloads_and_storage": "Descargas y Almacenamiento",
+        "language_preferences": "Preferencias de idioma",
+        "app_language": "Idioma de la aplicación",
+        "app_lang_desc": "Cambia el idioma en los menús, las líneas de texto y las pantallas de error.",
+        "themes": "Apariencia y Temas",
+        "color_theme": "Temas de color",
+        "choose_theme": "Elige un diseño limpio para la interfaz de tu aplicación.",
+        "download_location": "Ubicación de descarga",
+        "change_folder": "Cambiar carpeta",
+        "select_destination": "Seleccionar destino de descarga"
     },
     "de": {
         "your_playlist": "Deine Playlist",
@@ -161,7 +197,19 @@
         "progress": "Fortschritt",
         "pending": "Ausstehend",
         "processing": "Verarbeitung",
-        "cleared": "Geleert"
+        "cleared": "Geleert",
+        "language": "Sprache",
+        "appearence": "Erscheinungsbild",
+        "downloads_and_storage": "Downloads & Speicher",
+        "language_preferences": "Spracheinstellungen",
+        "app_language": "App-Sprache",
+        "app_lang_desc": "Ändert die Sprache in Menüs, Textzeilen und Fehlerbildschirmen.",
+        "themes": "Erscheinungsbild & Designs",
+        "color_theme": "Farbdesigns",
+        "choose_theme": "Wähle einen klaren Look für das Layout deiner Anwendung.",
+        "download_location": "Download-Pfad",
+        "change_folder": "Ordner ändern",
+        "select_destination": "Download-Ziel auswählen"
     },
     "it": {
         "your_playlist": "La tua Playlist",
@@ -202,7 +250,19 @@
         "progress": "Progresso",
         "pending": "In attesa",
         "processing": "Elaborazione",
-        "cleared": "Cancellato"
+        "cleared": "Cancellato",
+        "language": "Lingua",
+        "appearence": "Aspetto",
+        "downloads_and_storage": "Download e Archiviazione",
+        "language_preferences": "Preferenze della lingua",
+        "app_language": "Lingua dell'app",
+        "app_lang_desc": "Modifica la lingua all'interno di menu, righe di testo e schermate di errore.",
+        "themes": "Aspetto e Temi",
+        "color_theme": "Temi colore",
+        "choose_theme": "Scegli un aspetto pulito per la configurazione dei pannelli dell'applicazione.",
+        "download_location": "Percorso di download",
+        "change_folder": "Cambia cartella",
+        "select_destination": "Seleziona destinazione di download"
     },
     "pt": {
         "your_playlist": "Sua Playlist",
@@ -243,6 +303,18 @@
         "progress": "Progresso",
         "pending": "Pendente",
         "processing": "Processando",
-        "cleared": "Limpo"
+        "cleared": "Limpo",
+        "language": "Idioma",
+        "appearence": "Aparência",
+        "downloads_and_storage": "Downloads e Armazenamento",
+        "language_preferences": "Preferências de idioma",
+        "app_language": "Idioma do aplicativo",
+        "app_lang_desc": "Altera o idioma dos menus, linhas de texto e telas de erro.",
+        "themes": "Aparência e Temas",
+        "color_theme": "Temas de cores",
+        "choose_theme": "Escolha um visual limpo para as janelas e layouts do seu aplicativo.",
+        "download_location": "Local de download",
+        "change_folder": "Alterar pasta",
+        "select_destination": "Selecionar destino de download"
     }
 }

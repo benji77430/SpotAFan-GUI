@@ -9,6 +9,7 @@ class Config:
     APP_NAME = "SpotAFan"
     VERSION = "1.0.0"
     APP_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+    THEMES=["dark","light"]
     if os.name != "nt":
 
         _config_dir = Path.home() / ".config" / "spotafan"

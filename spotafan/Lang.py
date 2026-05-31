@@ -6,9 +6,9 @@ from spotafan.config import Config
 class LANG:
     def __init__():
         Config.load_settings()
-    DEFAULT_LANGS={}
+    DEFAULT_LANGS={"en":"english","fr":"français","es":"Español","de":"Deutsch","it":"Italiano","pt":"Português"}
 
-    _lang = dict(DEFAULT_LANGS)
+    _lang={}
 
     @classmethod
     def load_settings(cls):
@@ -18,7 +18,7 @@ class LANG:
                 with open("spotafan/ui/lang.json") as f:
                     cls._lang.update(json.load(f))
                     print(LANG)
-                    cls._lang=cls._lang[Config.get("lang")]
+                    cls._lang=cls._lang[Config.get("lang","en")]
 
             except (json.JSONDecodeError, OSError):
                 pass
@@ -35,7 +35,7 @@ class LANG:
             json.dump(cls._settings, f, indent=2)
 
     @classmethod
-    def get(cls, key, default=None):
+    def get(cls, key, default="NO TRANSLATION"):
         return cls._lang.get(key, default)
 
     @classmethod
