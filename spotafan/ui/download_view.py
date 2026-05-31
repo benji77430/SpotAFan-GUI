@@ -8,6 +8,7 @@ from PySide6.QtGui import QColor, QPalette
 from spotafan.Lang import LANG
 
 
+
 class DownloadView(QFrame):
     song_ready = Signal(dict)
 
@@ -19,7 +20,6 @@ class DownloadView(QFrame):
         self._connect_signals()
         self._refresh()
         LANG.load_settings()
-
     def _setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 24, 24, 24)

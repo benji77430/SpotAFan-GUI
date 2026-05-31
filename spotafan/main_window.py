@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
         self._engine.volume = vol
 
     def closeEvent(self, event):
-        CLOSE=True
         Config.set("volume", self._engine.volume)
+        self._player_bar.running=False
         self._engine.cleanup()
         super().closeEvent(event)

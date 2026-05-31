@@ -7,13 +7,22 @@ from PySide6.QtWidgets import (
 import requests
 from spotafan.config import Config
 from spotafan.Lang import LANG
-
+import socket
+def check_internet(ip="8.8.8.8",port=53,timeout=2):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((ip,port))
+        return True
+    except socket.error as ex:
+        print(ex)
+        return False
 
 class SearchView(QFrame):
     song_download_requested = Signal(dict)
 
     def __init__(self, download_manager, parent=None):
         super().__init__(parent)
+        self.internet=check_internet()
         self._downloader = download_manager
         self._results = []
         self.setObjectName("card")
@@ -53,7 +62,7 @@ class SearchView(QFrame):
         self._results_layout.setContentsMargins(0, 0, 0, 0)
 
         self._empty_label = QLabel(
-            LANG.get("nosearchtext")
+            LANG.get("nosearchtext") if self.internet else LANG.get("nointernetsearch")
         )
         self._empty_label.setObjectName("subtitle")
         self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -78,12 +87,13 @@ class SearchView(QFrame):
         )
 
     def _do_search(self):
-        query = self._search_input.text().strip()
-        if not query:
-            return
-        self._status_label.setText(LANG.get("searching"))
-        self._clear_results()
-        self._downloader.search(query)
+        if self.internet:
+            query = self._search_input.text().strip()
+            if not query:
+                return
+            self._status_label.setText(LANG.get("searching"))
+            self._clear_results()
+            self._downloader.search(query)
 
     def _clear_results(self):
         while self._results_layout.count():

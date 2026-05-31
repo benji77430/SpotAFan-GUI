@@ -15,6 +15,7 @@ class PlayerBar(QFrame):
     def __init__(self, engine, parent=None):
         super().__init__(parent)
         LANG.load_settings()
+        self.running=True
         self._engine = engine
         self._is_dragging = False
         self._duration = 0
@@ -30,9 +31,9 @@ class PlayerBar(QFrame):
         self._connect_signals()
         self.title = None
         self.artist = None
-        self.thread_title = threading.Thread(target=self._title_rotate)
+        self.thread_title = threading.Thread(target=self._title_rotate,daemon=True)
         self.thread_title.start()
-        self.thread_artist = threading.Thread(target=self._artist_rotate)
+        self.thread_artist = threading.Thread(target=self._artist_rotate,daemon=True)
         self.thread_artist.start()
         self.old_volume = 50
 
@@ -304,8 +305,7 @@ class PlayerBar(QFrame):
         self._vol_btn.setText(icon)
 
     def _title_rotate(self):
-        CLOSE = False
-        while not CLOSE:
+        while self.running:
             while self.title is not None:
                 self._song_artist.setText(self.artist)
                 if not len(self.title) < 20:
@@ -330,8 +330,7 @@ class PlayerBar(QFrame):
             time.sleep(0.05)
 
     def _artist_rotate(self):
-        CLOSE = False
-        while not CLOSE:
+        while self.running:
             while self.title is not None:
                 if not len(self.artist) < 30:
                     for i in range(len(self.artist)):
