@@ -24,7 +24,7 @@ class PlayerEngine(QObject):
         self._shuffle = False
         self._repeat = False
         self._current_song = None
-
+        self._startup_time_restored = False
         self._player.positionChanged.connect(
             lambda pos: self.position_changed.emit(pos / 1000.0)
         )
@@ -33,11 +33,11 @@ class PlayerEngine(QObject):
         )
         self._player.mediaStatusChanged.connect(self._on_media_status)
         self._player.playbackStateChanged.connect(self._on_state_changed)
-        self.set_playlist(Config.get("current_playlist"),Config.get("current_song"),restart=True)
 
     def _on_media_status(self, status):
         if status == QMediaPlayer.MediaStatus.EndOfMedia:
-            self.next()
+            if self._player.position() > 1000:
+                self.next()
 
     def _on_state_changed(self, state):
         mapping = {
@@ -51,6 +51,10 @@ class PlayerEngine(QObject):
     def volume(self):
         return int(self._audio.volume() * 100)
 
+    def set_volume(self, value):
+        """Helper function for shortcut triggers."""
+        self.volume = value
+
     @volume.setter
     def volume(self, value):
         self._audio.setVolume(max(0, min(100, value)) / 100.0)
@@ -59,7 +63,6 @@ class PlayerEngine(QObject):
     def set_playlist(self, songs, start_index=0,restart=False):
         self._playlist = list(songs)
         self._current_index = start_index if self._playlist else -1
-        Config.set("current_song", self._current_index)
         Config.set("current_playlist", self._playlist)
         self._load_current(restart)
 
@@ -67,18 +70,35 @@ class PlayerEngine(QObject):
         if not song==None:
             
             self._current_song = song
+            Config.set("current_song",song)
             self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
             self._player.play()
-            if restart:
-                print("restart mode !")
-                self._player.setPosition(int(Config.get("current_time")))
+            saved_time = Config.get("current_time", None)
+            if saved_time is not None and restart and int(saved_time) > 0:
+                
+                def restore_position(status):
+                        # LoadedMedia or BufferedMedia indicates FFmpeg successfully parsed the file headers
+                        if status in (QMediaPlayer.MediaStatus.LoadedMedia, QMediaPlayer.MediaStatus.BufferedMedia):
+                            self._player.setPosition(int(saved_time))
+                            print(f"Successfully restored time to: {saved_time / 1000.0}s")
+                            
+                            # Disconnect the temporary hook so it doesn't run on standard track changes
+                            try:
+                                self._player.mediaStatusChanged.disconnect(restore_position)
+                            except RuntimeError:
+                                pass # Catch edge case if already disconnected
+
+                # Connect to the status changed signal
+                self._player.mediaStatusChanged.connect(restore_position)
+                self.pause()
+                self._startup_time_restored = True
             self.song_changed.emit(song)
 
     
 
     def _load_current(self,restart=False):
         if 0 <= self._current_index < len(self._playlist):
-            song = self._playlist[self._current_index+1 if restart else self._current_index]
+            song = self._playlist[self._current_index]
             self.play_song(song,restart)
 
     def play(self):
@@ -91,6 +111,20 @@ class PlayerEngine(QObject):
         else:
             self._player.play()
 
+    def step_position(self, seconds):
+        """Adjusts the current playback position forward or backward by a delta of seconds."""
+        # QMediaPlayer tracks position in milliseconds
+        current_pos_ms = self._player.position()
+        duration_ms = self._player.duration()
+        
+        # Calculate new position target
+        target_pos_ms = current_pos_ms + (seconds * 1000)
+        
+        # Keep the target bounded between 0 and the actual track duration
+        final_pos_ms = max(0, min(duration_ms, target_pos_ms))
+        
+        self._player.setPosition(final_pos_ms)
+        print(f"moved to {target_pos_ms}")
     def pause(self):
         self._player.pause()
 

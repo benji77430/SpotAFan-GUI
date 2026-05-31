@@ -15,6 +15,7 @@ class PlayerBar(QFrame):
     def __init__(self, engine, parent=None):
         super().__init__(parent)
         LANG.load_settings()
+        self.running=True
         self._engine = engine
         self._is_dragging = False
         self._duration = 0
@@ -30,9 +31,9 @@ class PlayerBar(QFrame):
         self._connect_signals()
         self.title = None
         self.artist = None
-        self.thread_title = threading.Thread(target=self._title_rotate)
+        self.thread_title = threading.Thread(target=self._title_rotate,daemon=True)
         self.thread_title.start()
-        self.thread_artist = threading.Thread(target=self._artist_rotate)
+        self.thread_artist = threading.Thread(target=self._artist_rotate,daemon=True)
         self.thread_artist.start()
         self.old_volume = 50
 
@@ -202,7 +203,7 @@ class PlayerBar(QFrame):
         self._engine.position_changed.connect(self._on_position_changed)
         self._engine.duration_changed.connect(self._on_duration_changed)
         self._engine.state_changed.connect(self._on_state_changed)
-
+        self._engine.volume_changed.connect(self._on_engine_volume_changed)
         self._play_btn.clicked.connect(self._engine.toggle_play_pause)
         self._prev_btn.clicked.connect(self._engine.previous)
         self._next_btn.clicked.connect(self._engine.next)
@@ -303,9 +304,20 @@ class PlayerBar(QFrame):
         icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
         self._vol_btn.setText(icon)
 
+    def _on_engine_volume_changed(self, value):
+        """Updates the slider position when volume changes via shortcuts."""
+        # blockSignals prevents the slider from triggering _on_volume_changed 
+        # back to the engine unnecessarily while we update it
+        self._volume_slider.blockSignals(True)
+        self._volume_slider.setValue(value)
+        self._volume_slider.blockSignals(False)
+        
+        # Update the speaker icon (Mute/Low/High)
+        icon = "🔇" if value == 0 else "🔉" if value < 50 else "🔊"
+        self._vol_btn.setText(icon)
+
     def _title_rotate(self):
-        CLOSE = False
-        while not CLOSE:
+        while self.running:
             while self.title is not None:
                 self._song_artist.setText(self.artist)
                 if not len(self.title) < 20:
@@ -330,8 +342,7 @@ class PlayerBar(QFrame):
             time.sleep(0.05)
 
     def _artist_rotate(self):
-        CLOSE = False
-        while not CLOSE:
+        while self.running:
             while self.title is not None:
                 if not len(self.artist) < 30:
                     for i in range(len(self.artist)):
