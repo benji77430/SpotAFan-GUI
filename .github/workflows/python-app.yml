@@ -1,9 +1,7 @@
-name: Build Multi-Platform Binaries
+name: Build and Release Multi-Platform Binaries
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -13,7 +11,6 @@ jobs:
     
     strategy:
       matrix:
-        # This triggers two parallel jobs: one on Linux, one on Windows
         os: [ubuntu-latest, windows-latest]
 
     steps:
@@ -23,36 +20,27 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.14' # Specify your Python version
-        cache: 'pip'           # Caches pip dependencies to speed up runs
+        python-version: '3.11'
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r requirements.txt
-        # Install your project's dependencies here, e.g., pip install -r requirements.txt
-        # If you have specific dependencies, make sure they are installed!
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
+        pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main.py
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+    # Uploads to the rolling "latest" release
+    - name: Update Latest Release
+      uses: MarvinJWendt/action-automatic-releases@latest
       with:
-        name: binary-${{ matrix.os }}
-        # PyInstaller outputs to the 'dist' folder by default
-        path: dist/
-    - name: Upload Binaries to Release
-      uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        # Path to your final built executable or zip archive
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
         files: |
-          dist/spotafan.exe
-        # Optional: Add release notes or a changelog
-        body: |
-          Automated build for version ${{ github.ref_name }}.
-        draft: false
-        prerelease: false
+          dist/SpotAFan
+          dist/SpotAFan.exe
