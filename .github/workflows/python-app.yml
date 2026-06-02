@@ -41,7 +41,7 @@ jobs:
         name: "Development Build"
         tag: "latest"
         commit: "main"
-        prerelease: true
+        prerelease: false
         token: ${{ secrets.GITHUB_TOKEN }}
         artifacts: |
           dist/SpotAFan
