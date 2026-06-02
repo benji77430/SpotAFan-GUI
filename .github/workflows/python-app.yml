@@ -44,3 +44,15 @@ jobs:
         name: binary-${{ matrix.os }}
         # PyInstaller outputs to the 'dist' folder by default
         path: dist/
+    - name: Upload Binaries to Release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        # Path to your final built executable or zip archive
+        files: |
+          dist/spotafan.exe
+        # Optional: Add release notes or a changelog
+        body: |
+          Automated build for version ${{ github.ref_name }}.
+        draft: false
+        prerelease: false
