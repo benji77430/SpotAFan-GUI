@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QListWidget, QStackedWidget,
     QLabel, QComboBox, QPushButton, QSlider, QCheckBox, QFrame,
-    QFileDialog, QMessageBox, QListWidgetItem
+    QFileDialog, QMessageBox, QListWidgetItem,QLineEdit
 )
 from PySide6.QtGui import QFont
 
@@ -202,7 +202,7 @@ class SettingsPage(QWidget):
 
         # Theme Chooser row
         row = QHBoxLayout()
-        info_vbox = QVBoxLayout()
+        info_vbox = QHBoxLayout()
         lbl = QLabel(LANG.get("color_theme"))
         lbl.setObjectName("setting_label")
         desc = QLabel(LANG.get("choose_theme"))
@@ -226,9 +226,9 @@ class SettingsPage(QWidget):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        layout.setSpacing(16)
+        layout.setSpacing(13)
 
-        title = QLabel(LANG.get("download_and_storage"))
+        title = QLabel(LANG.get("downloads_and_storage"))
         title.setObjectName("section_title")
         layout.addWidget(title)
 
@@ -248,9 +248,28 @@ class SettingsPage(QWidget):
         row1.addLayout(info_vbox)
         row1.addStretch()
         row1.addWidget(change_path_btn)
-        layout.addLayout(row1)
-        layout.addWidget(self._create_row_separator())
 
+
+        # Search query max_results row
+        row2 = QVBoxLayout()
+        info_vbox2 = QHBoxLayout()
+        lbl2 = QLabel(LANG.get("max_results"))
+        lbl2.setObjectName("setting_label2")
+        self._search_input = QLineEdit()
+        self._search_input.setPlaceholderText(LANG.get("enter_max_results"))
+        self.current_max_results = QLabel(str(Config.get("max_results",LANG.get("settings_not_defined"))))
+        self.current_max_results.setObjectName("setting_desc")
+        info_vbox2.addWidget(lbl2)
+        info_vbox2.addWidget(self._search_input,stretch=3)
+        
+        row2.addLayout(info_vbox2)
+        row2.addWidget(self.current_max_results)
+        
+        self._search_input.returnPressed.connect(lambda:Config.set("max_results",int(self._search_input.text().strip())))
+
+        layout.addLayout(row1)
+        layout.addLayout(row2)
+        layout.addWidget(self._create_row_separator())
 
         return page
 

@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QLineEdit, QListWidget, QListWidgetItem, QFrame, QProgressBar,
     QScrollArea,
 )
-import requests
+import requests,threading
 from spotafan.config import Config
 from spotafan.Lang import LANG
 import socket
@@ -93,7 +93,7 @@ class SearchView(QFrame):
                 return
             self._status_label.setText(LANG.get("searching"))
             self._clear_results()
-            self._downloader.search(query)
+            self._downloader.search(query,Config.get("max_results",15))
 
     def _clear_results(self):
         while self._results_layout.count():
@@ -104,7 +104,6 @@ class SearchView(QFrame):
     def _on_search_results(self, results):
         self._results = results
         self._clear_results()
-        
         if not results:
             self._status_label.setText("Found 0 results")
             self._results_layout.addWidget(self._empty_label)
@@ -114,7 +113,8 @@ class SearchView(QFrame):
         self._status_label.setText(
             f"Found {len(results)} result{'s' if len(results) != 1 else ''}"
         )
-
+        
+        self._results_layout.addStretch()
         # On parcourt chaque résultat et on cherche la cover si YouTube n'en fournit pas
         for res in results:
             thumb_url = res.get("thumbnail", "")
@@ -127,8 +127,7 @@ class SearchView(QFrame):
 
             card = self._create_result_card(res)
             self._results_layout.addWidget(card)
-
-        self._results_layout.addStretch()
+            
 
     def _create_result_card(self, result):
         card = QFrame()
@@ -156,7 +155,7 @@ class SearchView(QFrame):
         thumb_url = result.get("thumbnail", "")
         loaded_successfully = False
         
-        if thumb_url:
+        if not thumb_url is "":
             try:
                 from PySide6.QtGui import QPixmap
                 pixmap = QPixmap()

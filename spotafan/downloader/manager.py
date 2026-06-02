@@ -25,7 +25,7 @@ class DownloadManager(QObject):
         self._active_downloads = {}
         self._lock = threading.Lock()
 
-    def search(self, query, max_results=10):
+    def search(self, query, max_results=Config.get("max_results",15)):
         def _search():
             try:
                 ydl_opts = {
@@ -60,7 +60,7 @@ class DownloadManager(QObject):
                             "source_url": f"https://youtube.com/watch?v={vid}",
                             "source_id": vid,
                         })
-
+                print("got search results now downloading thumbnails")
                 self.search_completed.emit(results)
             except Exception as e:
                 self.search_error.emit(str(e))

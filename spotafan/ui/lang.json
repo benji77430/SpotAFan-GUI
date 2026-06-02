@@ -50,7 +50,10 @@
         "choose_theme": "Choose a clean look for your application frame layouts.",
         "download_location": "Download location",
         "change_folder": "Change folder",
-        "select_destination": "Select Download Destination"
+        "select_destination": "Select Download Destination",
+        "max_results": "enter the maximum amount of results when searching for musics\n(higher amount take more time depending on your connection)",
+        "settings_not_defined": "settings not defined !",
+        "enter_max_results": "enter the maximum results"
     },
     "fr": {
         "your_playlist": "Ma Playlist",
@@ -103,7 +106,10 @@
         "choose_theme": "Choisissez une apparence épurée pour les fenêtres de votre application.",
         "download_location": "Emplacement de téléchargement",
         "change_folder": "Changer de dossier",
-        "select_destination": "Sélectionner la destination de téléchargement"
+        "select_destination": "Sélectionner la destination de téléchargement",
+        "max_results": "Saisissez la quantité maximale de résultats lors de la recherche de musiques\n(une quantité plus élevée prend plus de temps selon votre connexion)",
+        "settings_not_defined": "Paramètres non définis !",
+        "enter_max_results": "Saisissez le nombre maximum de résultats"
     },
     "es": {
         "your_playlist": "Tu Playlist",
@@ -156,7 +162,10 @@
         "choose_theme": "Elige un diseño limpio para la interfaz de tu aplicación.",
         "download_location": "Ubicación de descarga",
         "change_folder": "Cambiar carpeta",
-        "select_destination": "Seleccionar destino de descarga"
+        "select_destination": "Seleccionar destino de descarga",
+        "max_results": "Introduce la cantidad máxima de resultados al buscar música\n(una cantidad mayor requiere más tiempo según tu conexión)",
+        "settings_not_defined": "¡Ajustes no definidos!",
+        "enter_max_results": "Introduce el máximo de resultados"
     },
     "de": {
         "your_playlist": "Deine Playlist",
@@ -209,7 +218,10 @@
         "choose_theme": "Wähle einen klaren Look für das Layout deiner Anwendung.",
         "download_location": "Download-Pfad",
         "change_folder": "Ordner ändern",
-        "select_destination": "Download-Ziel auswählen"
+        "select_destination": "Download-Ziel auswählen",
+        "max_results": "Geben Sie die maximale Anzahl an Ergebnissen bei der Musiksuche ein\n(eine höhere Anzahl dauert je nach Verbindung länger)",
+        "settings_not_defined": "Einstellungen nicht definiert!",
+        "enter_max_results": "Maximale Ergebnisse eingeben"
     },
     "it": {
         "your_playlist": "La tua Playlist",
@@ -262,7 +274,10 @@
         "choose_theme": "Scegli un aspetto pulito per la configurazione dei pannelli dell'applicazione.",
         "download_location": "Percorso di download",
         "change_folder": "Cambia cartella",
-        "select_destination": "Seleziona destinazione di download"
+        "select_destination": "Seleziona destinazione di download",
+        "max_results": "Inserisci la quantità massima di risultati durante la ricerca di musica\n(un valore più alto richiede più tempo a seconda della connessione)",
+        "settings_not_defined": "Impostazioni non definite!",
+        "enter_max_results": "Inserisci il numero massimo di risultati"
     },
     "pt": {
         "your_playlist": "Sua Playlist",
@@ -315,6 +330,9 @@
         "choose_theme": "Escolha um visual limpo para as janelas e layouts do seu aplicativo.",
         "download_location": "Local de download",
         "change_folder": "Alterar pasta",
-        "select_destination": "Selecionar destino de download"
+        "select_destination": "Selecionar destino de download",
+        "max_results": "Insira a quantidade máxima de resultados ao pesquisar músicas\n(uma quantidade maior leva mais tempo dependendo da sua conexão)",
+        "settings_not_defined": "Configurações não definidas!",
+        "enter_max_results": "Insira o limite máximo de resultados"
     }
 }

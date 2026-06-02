@@ -35,7 +35,8 @@ class Config:
         "lang": "en",
         "current_song": "",
         "current_playlist": "",
-        "current_time": 0
+        "current_time": 0,
+        "max_results": 15
     }
 
     
