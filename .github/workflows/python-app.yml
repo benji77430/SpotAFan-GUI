@@ -33,14 +33,16 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main.py
 
-    # Uploads to the rolling "latest" release
+    # Creates or overwrites the rolling "latest" release with the binaries
     - name: Update Latest Release
-      uses: MarvinJWendt/action-automatic-releases@latest
+      uses: ncipollo/release-action@v1
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
+        allowUpdates: true
+        name: "Development Build"
+        tag: "latest"
+        commit: "main"
         prerelease: true
-        title: "Development Build"
-        files: |
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: |
           dist/SpotAFan
           dist/SpotAFan.exe
