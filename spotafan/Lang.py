@@ -15,7 +15,7 @@ class LANG:
         if os.path.exists("spotafan/ui/lang.json"):
 
             try:
-                with open("spotafan/ui/lang.json") as f:
+                with open("spotafan/ui/lang.json",encoding="utf-8") as f:
                     cls._lang.update(json.load(f))
                     print(LANG)
                     cls._lang=cls._lang[Config.get("lang","en")]
@@ -31,7 +31,7 @@ class LANG:
     @classmethod
     def save_settings(cls):
         cls.ensure_dirs()
-        with open(cls.LANG_FILE, "w") as f:
+        with open(cls.LANG_FILE, "w",encoding="utf-8") as f:
             json.dump(cls._settings, f, indent=2)
 
     @classmethod

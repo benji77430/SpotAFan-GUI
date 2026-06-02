@@ -53,7 +53,7 @@ class Config:
         cls.ensure_dirs()
         if cls.CONFIG_FILE.exists():
             try:
-                with open(cls.CONFIG_FILE) as f:
+                with open(cls.CONFIG_FILE,encoding="utf-8") as f:
                     cls._settings.update(json.load(f))
                 
             except (json.JSONDecodeError, OSError):
@@ -65,7 +65,7 @@ class Config:
     @classmethod
     def save_settings(cls):
         cls.ensure_dirs()
-        with open(cls.CONFIG_FILE, "w") as f:
+        with open(cls.CONFIG_FILE, "w",encoding="utf-8") as f:
             json.dump(cls._settings, f, indent=2)
 
     @classmethod

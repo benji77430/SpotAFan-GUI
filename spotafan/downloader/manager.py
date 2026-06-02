@@ -25,7 +25,7 @@ class DownloadManager(QObject):
         self._active_downloads = {}
         self._lock = threading.Lock()
 
-    def search(self, query, max_results=15):
+    def search(self, query, max_results=10):
         def _search():
             try:
                 ydl_opts = {

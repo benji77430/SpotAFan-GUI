@@ -8,7 +8,7 @@ import requests
 from spotafan.config import Config
 from spotafan.Lang import LANG
 import socket
-def check_internet(ip="8.8.8.8",port=53,timeout=2):
+def check_internet(ip="8.8.8.8",port=53,timeout=0.4):
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((ip,port))
@@ -46,7 +46,7 @@ class SearchView(QFrame):
         search_row.addWidget(self._search_input, stretch=1)
 
         self._search_btn = QPushButton(f"🔍 {LANG.get('search')}")
-        self._search_btn.setFixedWidth(120)
+        self._search_btn.setFixedWidth(130)
         search_row.addWidget(self._search_btn)
         layout.addLayout(search_row)
 
@@ -202,7 +202,7 @@ class SearchView(QFrame):
             QPushButton {
                 background-color: #1db954; color: #ffffff;
                 border: none; border-radius: 16px;
-                font-size: 12px; font-weight: bold;
+                font-size: 11px; font-weight: bold;
             }
             QPushButton:hover { background-color: #1ed760; }
         """)
@@ -216,12 +216,12 @@ class SearchView(QFrame):
     @staticmethod
     def fetch_track_cover(title, artist=""):
         """Recherche automatique via l'API publique et gratuite d'iTunes."""
-        if not title or title == LANG.get("unknown_track"):
+        if not title or title == LANG.get("unknown_track") or not check_internet():
             return ""
         query = f"{title} {artist}".strip()
         url = f"https://itunes.apple.com/search?term={requests.utils.quote(query)}&entity=song&limit=1"
         try:
-            response = requests.get(url, timeout=3)
+            response = requests.get(url, timeout=0.4)
             if response.status_code == 200:
                 data = response.json()
                 if data.get("resultCount", 0) > 0:

@@ -352,7 +352,7 @@ class PlayerBar(QFrame):
         
         # Toggle the clean Bootstrap graphics dynamically
         if value == 0: svg_key = "volume_mute" 
-        if 0 < value < 50: svg_key = "volume_down"
+        if 0 < value <= 50: svg_key = "volume_down"
         if value > 50: svg_key = "volume_up"
         self._vol_btn.setIcon(self._get_svg_icon(svg_key))
 
@@ -364,7 +364,7 @@ class PlayerBar(QFrame):
         
         self._vol_btn.setText("")
         if value == 0: svg_key = "volume_mute" 
-        if 0 < value < 50: svg_key = "volume_down"
+        if 0 < value <= 50: svg_key = "volume_down"
         if value > 50: svg_key = "volume_up"
         self._vol_btn.setIcon(self._get_svg_icon(svg_key))
 
