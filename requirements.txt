@@ -2,6 +2,3 @@ PySide6>=6.5.0
 yt-dlp>=2023.0.0
 mutagen>=1.47.0
 requests>=2.31.0
-
-# Linux-only dependencies
-mpris-server>=1.0.0; sys_platform == 'linux'
