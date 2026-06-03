@@ -1,60 +1,8 @@
-import random
-import time
-import os
+import random,time
 from PySide6.QtCore import QObject, Signal, QUrl, QTimer
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 from spotafan.config import Config
 from spotafan.Lang import LANG
-
-# --- Linux MPRIS Setup ---
-if os.name != "nt":
-    from mpris_server.server import Server  # Changed from MPRISServer to Server
-    from mpris_server.adapters import MprisAdapter  # Changed from BaseAdapter to MprisAdapter
-
-    # Inherit from the correct MprisAdapter base class
-    class SpotAFanAdapter(MprisAdapter):
-        def __init__(self, player_engine):
-            super().__init__()
-            self.player = player_engine  # Reference to PlayerEngine
-
-        def metadata(self):  # Library uses 'metadata()' instead of 'get_metadata()'
-            song = self.player.current_song
-            if not song:
-                return {}
-            
-            # MPRIS expects microseconds for track length
-            duration_us = int(self.player._player.duration() * 1000)
-            
-            from mpris_server import Metadata
-            return {
-                "mpris:trackid": f"/org/mpris/MediaPlayer2/SpotAFan/track/{self.player._current_index}",
-                "mpris:length": duration_us if duration_us > 0 else 0,
-                "xesam:title": song.get("title", os.path.basename(song["file_path"])),
-                "xesam:artist": [song.get("artist", "Unknown Artist")],
-            }
-
-        def playback_status(self):  # Library uses 'playback_status()' instead of 'get_playback_status()'
-            from PySide6.QtMultimedia import QMediaPlayer
-            state = self.player._player.playbackState()
-            if state == QMediaPlayer.PlaybackState.PlayingState:
-                return "Playing"
-            elif state == QMediaPlayer.PlaybackState.PausedState:
-                return "Paused"
-            return "Stopped"
-
-        # Hardware/Widget controls routed back into your engine
-        def play(self):
-            self.player.play()
-
-        def pause(self):
-            self.player.pause()
-
-        def next(self):
-            self.player.next()
-
-        def previous(self):
-            self.player.previous()
-
 
 class PlayerEngine(QObject):
     song_changed = Signal(dict)
@@ -68,46 +16,23 @@ class PlayerEngine(QObject):
         self._player = QMediaPlayer(parent)
         self._audio = QAudioOutput(parent)
         self._player.setAudioOutput(self._audio)
-        
         Config.load_settings()
         LANG.load_settings()
-        
         self._audio.setVolume(max(0, min(100, Config.get("volume"))) / 100.0)
         self._playlist = []
         self._current_index = -1
         self._shuffle = False
         self._repeat = False
         self._current_song = None
-<<<<<<< HEAD
         self._startup_time_restored = False
-=======
-
-        # --- Initialize Linux MPRIS ---
-        if os.name != "nt":
-            self.adapter = SpotAFanAdapter(self)
-            self.mpris = Server("SpotAFan", adapter=self.adapter)
-            self.mpris.publish()
-
-            # Set up a timer to cleanly process DBus loops natively inside PySide6
-            self.dbus_timer = QTimer(self)
-            
-            # CHANGED: Connect directly to self.mpris.loop without `.iteration`
-            self.dbus_timer.timeout.connect(self.mpris.loop)
-            self.dbus_timer.start(10) # check every 10ms
-
-        # Qt Signals Connection
->>>>>>> e9934e6 (linux kde mpris server for media playback control)
         self._player.positionChanged.connect(
             lambda pos: self.position_changed.emit(pos / 1000.0)
         )
-        self._player.durationChanged.connect(self._on_duration_changed)
+        self._player.durationChanged.connect(
+            lambda dur: self.duration_changed.emit(dur / 1000.0)
+        )
         self._player.mediaStatusChanged.connect(self._on_media_status)
         self._player.playbackStateChanged.connect(self._on_state_changed)
-<<<<<<< HEAD
-=======
-        
-        self.set_playlist(Config.get("current_playlist"), Config.get("current_song"), restart=True)
->>>>>>> e9934e6 (linux kde mpris server for media playback control)
 
     def _on_media_status(self, status):
         if status == QMediaPlayer.MediaStatus.EndOfMedia:
@@ -120,19 +45,7 @@ class PlayerEngine(QObject):
             QMediaPlayer.PlaybackState.PausedState: "paused",
             QMediaPlayer.PlaybackState.StoppedState: "stopped",
         }
-        status_str = mapping.get(state, "stopped")
-        self.state_changed.emit(status_str)
-        
-        # Sync playback state changes back to KDE
-        if os.name != "nt":
-            mpris_status = "Playing" if status_str == "playing" else ("Paused" if status_str == "paused" else "Stopped")
-            self.mpris.player.PlaybackStatusChanged(mpris_status)
-
-    def _on_duration_changed(self, duration_ms):
-        self.duration_changed.emit(duration_ms / 1000.0)
-        # When track metadata/duration updates asynchronously, refresh KDE UI
-        if os.name != "nt":
-            self.mpris.player.MetadataChanged(self.adapter.get_metadata())
+        self.state_changed.emit(mapping.get(state, "stopped"))
 
     @property
     def volume(self):
@@ -147,19 +60,19 @@ class PlayerEngine(QObject):
         self._audio.setVolume(max(0, min(100, value)) / 100.0)
         self.volume_changed.emit(self.volume)
 
-    def set_playlist(self, songs, start_index=0, restart=False):
+    def set_playlist(self, songs, start_index=0,restart=False):
         self._playlist = list(songs)
         self._current_index = start_index if self._playlist else -1
         Config.set("current_playlist", self._playlist)
         self._load_current(restart)
 
-    def play_song(self, song, restart=False):
-        if song is not None:
+    def play_song(self, song,restart=False):
+        if not song==None:
+            
             self._current_song = song
             Config.set("current_song",song)
             self._player.setSource(QUrl.fromLocalFile(song["file_path"]))
             self._player.play()
-<<<<<<< HEAD
             saved_time = Config.get("current_time", None)
             if saved_time is not None and restart and int(saved_time) > 0:
                 
@@ -179,30 +92,14 @@ class PlayerEngine(QObject):
                 self._player.mediaStatusChanged.connect(restore_position)
                 self.pause()
                 self._startup_time_restored = True
-=======
-            if restart:
-                print("restart mode !")
-                self._player.setPosition(int(Config.get("current_time")))
-            
->>>>>>> e9934e6 (linux kde mpris server for media playback control)
             self.song_changed.emit(song)
-            
-            # Sync metadata changes back to KDE
-            if os.name != "nt":
-                self.mpris.player.MetadataChanged(self.adapter.get_metadata())
 
-    def _load_current(self, restart=False):
+    
+
+    def _load_current(self,restart=False):
         if 0 <= self._current_index < len(self._playlist):
-<<<<<<< HEAD
             song = self._playlist[self._current_index]
             self.play_song(song,restart)
-=======
-            # Safe boundary check
-            idx = self._current_index + 1 if restart else self._current_index
-            if idx < len(self._playlist):
-                song = self._playlist[idx]
-                self.play_song(song, restart)
->>>>>>> e9934e6 (linux kde mpris server for media playback control)
 
     def play(self):
         if self._player.playbackState() == QMediaPlayer.PlaybackState.StoppedState:
@@ -210,6 +107,7 @@ class PlayerEngine(QObject):
                 self._load_current()
             elif self._current_song:
                 self.play_song(self._current_song)
+
         else:
             self._player.play()
 
@@ -243,7 +141,8 @@ class PlayerEngine(QObject):
         if not self._playlist:
             return
         if self._shuffle:
-            candidates = [i for i in range(len(self._playlist)) if i != self._current_index]
+            candidates = [i for i in range(len(self._playlist))
+                          if i != self._current_index]
             if candidates:
                 self._current_index = random.choice(candidates)
         else:
@@ -265,7 +164,8 @@ class PlayerEngine(QObject):
             self._player.setPosition(0)
             return
         if self._shuffle:
-            candidates = [i for i in range(len(self._playlist)) if i != self._current_index]
+            candidates = [i for i in range(len(self._playlist))
+                          if i != self._current_index]
             if candidates:
                 self._current_index = random.choice(candidates)
         else:
@@ -300,5 +200,5 @@ class PlayerEngine(QObject):
 
     def cleanup(self):
         print(f"current time : {int(self._player.position()) / 1000.0}")
-        Config.set("current_time", int(self._player.position()))
+        Config.set("current_time",int(self._player.position()))
         self._player.stop()
