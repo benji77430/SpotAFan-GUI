@@ -33,6 +33,14 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
 
+    # --- NEW ARCH LINUX PACKAGING STEPS ---
+    - name: Install NFPM and Pack Arch Linux Package
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.asg.d/goreleaser.list
+        sudo apt-get update && sudo apt-get install nfpm -y
+        nfpm package --config nfpm.yaml --packager archlinux --target dist/
+
     # Creates or overwrites the rolling "latest" release with the binaries
     - name: Update Latest Release
       uses: ncipollo/release-action@v1
@@ -43,6 +51,8 @@ jobs:
         commit: "main"
         prerelease: false
         token: ${{ secrets.GITHUB_TOKEN }}
+        # We use wildcards so the release-action grabs whatever exists depending on the runner matrix
         artifacts: |
           dist/SpotAFan
           dist/SpotAFan.exe
+          dist/*.pkg.tar.zst
