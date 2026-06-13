@@ -11,7 +11,7 @@ license: "Unlicense"
 contents:
   - src: "dist/SpotAFan"
     dst: "/usr/bin/SpotAFan"
-  - src: "assets/SpotAFan.desktop"
+  - src: "assets/spotafan.desktop"
     dst: "/usr/share/applications/SpotAFan.desktop"
   - src: "assets/logo.png"
     dst: "/usr/share/icons/hicolor/256x256/apps/SpotAFan.png"
