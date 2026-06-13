@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SpotAFan
+Comment=Python Qt Application
+Exec=/usr/bin/SpotAFan
+Icon=SpotAFan
+Terminal=false
+Categories=AudioVideo;Audio;Player;
