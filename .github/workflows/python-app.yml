@@ -32,16 +32,44 @@ jobs:
     - name: Build with PyInstaller
       run: |
         pyinstaller --onefile --windowed --icon=logo.ico --name=SpotAFan --add-data="logo.ico:." --add-data="spotafan/ui/lang.json:spotafan/ui" --hidden-import=PySide6.QtMultimedia --hidden-import=mutagen --hidden-import=yt_dlp --hidden-import=requests --hidden-import=datetime main
-        
-    # Creates or overwrites the rolling "latest" release with the binaries
+
+    # --- PACKAGING STEPS (LINUX ONLY) ---
     - name: Install NFPM and Pack Arch Linux Package
       if: matrix.os == 'ubuntu-latest'
       run: |
-          # Add the goreleaser repo to the standard sources.list.d directory
-          echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-          
-          # Update packages and install nfpm
-          sudo apt-get update && sudo apt-get install nfpm -y
-          
-          # Build the Arch package
-          nfpm package --config nfpm.yaml --packager archlinux --target dist/
+        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+        sudo apt-get update && sudo apt-get install nfpm -y
+        
+        # Explicitly tell nFPM to output the package INSIDE the dist/ directory
+        nfpm package --config nfpm.yaml --packager archlinux --target dist/
+
+    # --- RELEASE ARTIFACTS FOR LINUX ---
+    - name: Update Latest Release (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifactErrorsFailBuild: true  # This will tell us immediately if a file is missing
+        name: "Development Build"
+        tag: "latest"
+        commit: "main"
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: |
+          dist/SpotAFan
+          dist/*.pkg.tar.zst
+
+    # --- RELEASE ARTIFACTS FOR WINDOWS ---
+    - name: Update Latest Release (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        artifactErrorsFailBuild: true
+        name: "Development Build"
+        tag: "latest"
+        commit: "main"
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: |
+          dist/SpotAFan.exe
