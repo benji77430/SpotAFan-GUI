@@ -1,15 +1,12 @@
 name: "spotafan"
-arch: "x86_64"
+arch: "amd64"       # Note: Use 'amd64' here (Go nomenclature). nfpm translates it to x86_64 for Arch!
 platform: "linux"
 version: "1.0.0"
 release: "1"
 section: "sound"
 maintainer: "Your Name <you@example.com>"
 description: "SpotAFan Python Qt App"
-license: "Unlicense"  # Or "MIT"
-
-formats:
-  - archlinux
+license: "Unlicense"
 
 contents:
   - src: "dist/SpotAFan"
