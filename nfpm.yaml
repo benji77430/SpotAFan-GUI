@@ -1,0 +1,17 @@
+name: "spotafan"
+arch: "x86_64"
+platform: "linux"
+version: "1.0.0"
+release: "1"
+section: "sound"
+maintainer: "Your Name <you@example.com>"
+description: "SpotAFan Python Qt App"
+license: "GPL-3.0"
+
+packagers:
+  - archlinux
+
+files:
+  "dist/SpotAFan": "/usr/bin/SpotAFan"
+  "assets/SpotAFan.desktop": "/usr/share/applications/SpotAFan.desktop"
+  "assets/logo.png": "/usr/share/icons/hicolor/256x256/apps/SpotAFan.png"
