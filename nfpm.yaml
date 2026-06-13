@@ -8,10 +8,13 @@ maintainer: "Your Name <you@example.com>"
 description: "SpotAFan Python Qt App"
 license: "Unlicense"  # Or "MIT"
 
-packagers:
+formats:
   - archlinux
 
-files:
-  "dist/SpotAFan": "/usr/bin/SpotAFan"
-  "assets/SpotAFan.desktop": "/usr/share/applications/SpotAFan.desktop"
-  "assets/logo.png": "/usr/share/icons/hicolor/256x256/apps/SpotAFan.png"
+contents:
+  - src: "dist/SpotAFan"
+    dst: "/usr/bin/SpotAFan"
+  - src: "assets/SpotAFan.desktop"
+    dst: "/usr/share/applications/SpotAFan.desktop"
+  - src: "assets/logo.png"
+    dst: "/usr/share/icons/hicolor/256x256/apps/SpotAFan.png"
