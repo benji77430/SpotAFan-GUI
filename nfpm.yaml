@@ -6,7 +6,7 @@ release: "1"
 section: "sound"
 maintainer: "Your Name <you@example.com>"
 description: "SpotAFan Python Qt App"
-license: "GPL-3.0"
+license: "Unlicense"  # Or "MIT"
 
 packagers:
   - archlinux
