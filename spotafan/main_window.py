@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
         self._connect_signals()
         self._restore_volume()
         self._setup_shortcuts()
-        if Config.get("current_song", None) is not None:
+        if Config.get("current_song", None) is not None or  Config.get("current_song", None) is not -1:
             self._play_song(int(Config.get("current_song")), restart=True)
 
     def _setup_window(self):
