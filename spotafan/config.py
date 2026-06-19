@@ -33,7 +33,7 @@ class Config:
         "theme": "light",
         "volume": 80,
         "lang": "en",
-        "current_song": "",
+        "current_song": -1,
         "current_playlist": "",
         "current_time": 0,
         "max_results": 15
