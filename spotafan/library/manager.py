@@ -48,7 +48,7 @@ class LibraryManager(QObject):
         import mutagen
         path = Path(file_path)
         if not path.exists() or path.suffix.lower() not in (
-            ".mp3", ".flac", ".ogg", ".wav", ".m4a", ".wma"
+            ".mp3", ".flac", ".ogg", ".wav", ".m4a", ".wma", ".webm"
         ):
             return None
 
